@@ -38,7 +38,7 @@ This repository contains Python code for controlling a missile launcher using th
 To use the missile launcher, execute the `missile.py` script. Make sure you have sufficient permissions to access USB devices.
 
 ```bash
-python missile.py
+sudo python missile.py
 ```
 
 The launcher can be controlled using the following commands:
