@@ -37,6 +37,7 @@ class Launcher(object):
         self.dev.set_configuration()
         self.cfg = dev.get_active_configuration()
         self.intf = self.cfg[(0,0)]
+        self.fire_start_time = time.time()
 
         usb.util.claim_interface(self.dev, self.intf)
 
@@ -121,9 +122,10 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
                     self.send_command(STOP)
 
                 if FIRE_COMPLETED and self.firing:
-                    time.sleep(1.0)
-                    print("Fire completed. Sending 0")
                     fire_complete_time = time.time()
+                    print(f"Firing completed in {fire_complete_time-self.fire_start_time} seconds.")
+                    time.sleep(5.0) # waiting too short of a time causes the next firing to end too fast
+                    print("Fire completed. Sending 0")
                     self.send_command(0)
                     self.firing = False
         self.close()
@@ -221,6 +223,7 @@ while True:
 
     if cmd == 'f':
         launcher.firing = True
+        launcher.fire_start_time = time.time()
         launcher.send_command(FIRE)
 
 launcher.running = False
