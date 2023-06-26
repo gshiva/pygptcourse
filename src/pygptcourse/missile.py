@@ -17,22 +17,20 @@ FIRE = 16
 DOWN = 2
 UP = 1
 
-dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
-
-if dev is None:
-    raise Exception('Could not find USB device')
-
-try:
-    dev.detach_kernel_driver(0)
-    print("Device unregistered")
-except Exception:
-    print("Already unregistered")
-
-dev.reset()
-
-
 class Launcher(object):
-    def __init__(self, dev):
+    def __init__(self):
+        dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
+
+        if dev is None:
+            raise Exception('Could not find USB device')
+
+        try:
+            dev.detach_kernel_driver(0)
+            print("Device unregistered")
+        except Exception:
+            print("Already unregistered")
+
+        dev.reset()
         self.dev = dev
         self.dev.set_configuration()
         self.cfg = dev.get_active_configuration()
@@ -46,8 +44,7 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
 
         self.send_command(0)
 
-        self.t = threading.Thread(target=self.read_process)
-        self.running = True
+        self.running = False
         self.firing = False
 
         self.state = {
@@ -58,12 +55,19 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
             'fire' : False,
         }
 
-        self.t.start()
 
 #        try:
 #            self.dev.reset()
 #        except usb.core.USBError, e:
 #            print("RESET ERROR", e)
+
+    def start(self):
+        self.t = threading.Thread(target=self.read_process)
+        self.t.start()
+        self.running = True
+
+    def stop(self):
+        self.t.stop()
 
     def read_process(self):
         abort_fire = False
@@ -179,55 +183,58 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
 #Right<->Left Max Range = 26
 #Up<->Down Max Range = 4
 
-launcher = Launcher(dev)
+if __name__ == '__main__':
+    launcher = Launcher()
 
-print("Starting command loop")
-while True:
-    prompt = '{} {} {} {} {}'.format(
-        'L' if launcher.state['left'] else ' ',
-        'R' if launcher.state['right'] else ' ',
-        'U' if launcher.state['up'] else ' ',
-        'D' if launcher.state['down'] else ' ',
-        'F' if launcher.state['fire'] else ' '
-    )
-    try:
-        s = input('{}>> '.format(prompt)).strip()
-        print(f"Received command {s}")
-        cmd, delay = s.split()
-        delay = float(delay)
-    except EOFError:
-        cmd = 'quit'
-    except ValueError:
-        cmd = s
-        delay = 0
+    launcher.start()
 
-    if cmd == 'quit':
-        break
+    print("Starting command loop")
+    while True:
+        prompt = '{} {} {} {} {}'.format(
+            'L' if launcher.state['left'] else ' ',
+            'R' if launcher.state['right'] else ' ',
+            'U' if launcher.state['up'] else ' ',
+            'D' if launcher.state['down'] else ' ',
+            'F' if launcher.state['fire'] else ' '
+        )
+        try:
+            s = input('{}>> '.format(prompt)).strip()
+            print(f"Received command {s}")
+            cmd, delay = s.split()
+            delay = float(delay)
+        except EOFError:
+            cmd = 'quit'
+        except ValueError:
+            cmd = s
+            delay = 0
 
-    if cmd in 'rlud' and delay > 0:
-        print(f"Sending command {cmd}")
-        if cmd == 'r':
-            launcher.send_command(RIGHT)
-        if cmd == 'l':
-            launcher.send_command(LEFT)
-        if cmd == 'u':
-            if launcher.state['up']:
-                delay = 0
-            else:
-                launcher.send_command(UP)
-        if cmd == 'd':
-            launcher.send_command(DOWN)
+        if cmd == 'quit':
+            break
 
-        time.sleep(delay)
-        launcher.send_command(STOP)
+        if cmd in 'rlud' and delay > 0:
+            print(f"Sending command {cmd}")
+            if cmd == 'r':
+                launcher.send_command(RIGHT)
+            if cmd == 'l':
+                launcher.send_command(LEFT)
+            if cmd == 'u':
+                if launcher.state['up']:
+                    delay = 0
+                else:
+                    launcher.send_command(UP)
+            if cmd == 'd':
+                launcher.send_command(DOWN)
 
-    if cmd == 'f':
-        launcher.firing = True
-        launcher.fire_start_time = time.time()
-        launcher.send_command(FIRE)
+            time.sleep(delay)
+            launcher.send_command(STOP)
 
-launcher.running = False
+        if cmd == 'f':
+            launcher.firing = True
+            launcher.fire_start_time = time.time()
+            launcher.send_command(FIRE)
 
-launcher.close()
+    launcher.running = False
 
-print("Done")
+    launcher.close()
+
+    print("Done")
