@@ -62,12 +62,16 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
 #            print("RESET ERROR", e)
 
     def start(self):
+        self.running = True
         self.t = threading.Thread(target=self.read_process)
         self.t.start()
         self.running = True
 
     def stop(self):
+        self.running = False
+        print("Stopping the thread")
         self.t.stop()
+        print("Thread stopped")
 
     def read_process(self):
         abort_fire = False
@@ -146,6 +150,14 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
         try:
             self.command = command
             self.dev.ctrl_transfer(0x21, 0x09, 0x200, 0, [command])
+        except usb.core.USBError as e:
+            print("SEND ERROR", e)
+
+    def move(self, command, duration):
+        try:
+            self.send_command(command)
+            time.sleep(duration)
+            self.send_command(STOP)
         except usb.core.USBError as e:
             print("SEND ERROR", e)
 

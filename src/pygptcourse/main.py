@@ -5,6 +5,7 @@ import cv2
 import face_recognition
 
 from pygptcourse.missile import Launcher
+from pygptcourse.missile import RIGHT, LEFT, STOP, FIRE, DOWN, UP
 
 shiva_image = face_recognition.load_image_file("shiva_face.jpg")
 shiva_face_encoding = face_recognition.face_encodings(shiva_image)[0]
@@ -25,7 +26,7 @@ center_y = 0
 face_center_x = 0
 face_center_y = 0
 
-# launcher = Launcher()
+launcher = Launcher()
 
 # Set the total time for moving from left to right and top to bottom
 TOTAL_TIME_LR = 26
@@ -44,6 +45,7 @@ TIME_INCREMENT = 0.1
 
 def move_camera(direction, duration):
     global current_camera_position
+    cmd = STOP
 
     prev_current_camera_position = current_camera_position.copy()
     print(f"Previous camera position: {prev_current_camera_position}")
@@ -51,12 +53,16 @@ def move_camera(direction, duration):
     # Update the current position based on the direction
     if direction == "LEFT":
         current_camera_position[0] -= duration
+        cmd = LEFT
     elif direction == "RIGHT":
         current_camera_position[0] += duration
+        cmd = RIGHT
     elif direction == "UP":
         current_camera_position[1] -= duration
+        cmd = UP
     elif direction == "DOWN":
         current_camera_position[1] += duration
+        cmd = DOWN
 
     # Make sure the current position is within the image bounds
     # Explanation from ChatGPT
@@ -86,6 +92,7 @@ def move_camera(direction, duration):
         return
     print(f"Moving to position: {current_camera_position}, Direction: {direction}, Duration: {duration}")
     # TODO: issue usb move command
+    launcher.move(cmd, duration)
 
 
 def move_camera_to_center():
@@ -108,6 +115,7 @@ def move_camera_to_center():
     move_camera("UP", TOTAL_TIME_TB/2)
 
 
+launcher.start()
 move_camera_to_center()
 
 while True:
@@ -136,6 +144,8 @@ while True:
                 name = "adil"
 
             face_names.append(name)
+
+        print(f"Face locations: {face_locations}")
 
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Because we made the image smaller, now need to multiply by 4 to get correct size
@@ -199,4 +209,5 @@ while True:
 
 video_capture.release()
 cv2.destroyAllWindows()
-# launcher.close()
+launcher.running = False
+launcher.close()
