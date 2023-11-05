@@ -8,7 +8,7 @@ readme = "README.md"
 packages = [{include = "pygptcourse", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.13"
 opencv-python = "4.5.5.62"
 opencv-contrib-python = "4.5.5.62"
 face-recognition = "1.3.0"

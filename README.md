@@ -23,7 +23,7 @@ This repository contains Python code for controlling a missile launcher using th
    git clone https://github.com/gshiva/pygptcourse.git
    ```
 
-2. Install the required dependencies:
+1. Install the required dependencies:
 
    ```bash
    # if poetry is not installed
@@ -31,14 +31,24 @@ This repository contains Python code for controlling a missile launcher using th
    poetry install
    ```
 
-3. Connect the missile launcher via USB.
+   1. For running under Windows:
+   Most likely you will run into `No backend available` errors.
+
+   ```bash
+      raise NoBackendError('No backend available')
+      usb.core.NoBackendError: No backend available
+   ```
+
+   Follow the instructions in [AdaFruit's instruction for fixing `no backend error`](https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/windows#test-pyusb-and-pyftdi-3041697). It invovles downloading [libusb](https://sourceforge.net/projects/libusb/) and copying it to `C:\Windows\System32\` directory.
+
+1. Connect the missile launcher via USB.
 
 ## Usage
 
 To use the missile launcher, execute the `missile.py` script. Make sure you have sufficient permissions to access USB devices.
 
 ```bash
-sudo python missile.py
+sudo poetry run python missile.py
 ```
 
 The launcher can be controlled using the following commands:
@@ -95,4 +105,3 @@ This code is based on the original source available at [https://github.com/hovre
 ## License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
-
