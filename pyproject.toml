@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pygptcourse"
 version = "0.1.2"
-description = "Face detection and tracking using USB missile launcher and rpi camera module to demonstrate how ChatGPT can speed up development and writing clean and SOLID code."
+description = "Face detection and tracking using USB T-Shirt launcher and rpi camera module to demonstrate how ChatGPT can speed up development and writing clean and SOLID code."
 authors = ["G Shiva"]
 license = "Apache"
 readme = "README.md"
@@ -13,6 +13,7 @@ opencv-python = "4.5.5.62"
 opencv-contrib-python = "4.5.5.62"
 face-recognition = "1.3.0"
 pyusb = "^1.2.1"
+setuptools = "^68.2.2"
 
 
 [tool.poetry.group.dev.dependencies]

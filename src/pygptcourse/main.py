@@ -4,8 +4,8 @@ import cv2
 
 import face_recognition
 
-from pygptcourse.missile import Launcher
-from pygptcourse.missile import RIGHT, LEFT, STOP, FIRE, DOWN, UP
+from pygptcourse.tshirt_launcher import Launcher
+from pygptcourse.tshirt_launcher import RIGHT, LEFT, STOP, FIRE, DOWN, UP
 
 shiva_image = face_recognition.load_image_file("shiva_face.jpg")
 shiva_face_encoding = face_recognition.face_encodings(shiva_image)[0]
