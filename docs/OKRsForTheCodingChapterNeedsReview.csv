@@ -1,16 +1,7 @@
-# Objective
-
-Write a high-quality book that shows how ChatGPT can help in all the steps of SDLC, from requirements to feedback and iteration, using a fun project of a USB missile launcher that can fire nerf darts using the pan and tilt of the turret and OpenCV face recognition.
-
-## Key Results
-
-To achieve the objective of writing a high quality book we need the following key results.
-
-### Key Result 1
-
-Inspire at least 10 people from underrepresented communities in Python Programming such as Women, People of Color, Dalits, and Muslims to get salaried jobs as Python developers.
-
-### Key Result 2
+Title,Body,Labels,Assignees,Milestone
+"Objective - Write a high-quality book that shows how ChatGPT can help in all the steps of SDLC", "Objective - Write a high-quality book that shows how ChatGPT can help in all the steps of SDLC from requirements to feedback and iteration, using a fun project of a USB missile launcher that can fire nerf darts using the pan and tilt of the turret and OpenCV face recognition.","Objective,Level 1",,,
+"Objective - Key Result 1 - Inspire underrepresented communities","Inspire at least 10 people from underrepresented communities in Python Programming such as women, People of Color, Dalits, and Muslims to get salaried jobs as Python developers.", "Key Result 1", "Level 1",,
+"Objective - Key Result 2
 
 Achieve a net profit of at least $100,000 from book sales within one year of publication.
 
