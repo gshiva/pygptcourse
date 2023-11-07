@@ -8,7 +8,7 @@ To achieve the objective of writing a high quality book we need the following ke
 
 ### Key Result 1
 
-Inspire at least 10 people from underrepresented communities in Python Programming such as women, People of Color, Dalits, and Muslims to get salaried jobs as Python developers.
+Inspire at least 10 people from underrepresented communities in Python Programming such as Women, People of Color, Dalits, and Muslims to get salaried jobs as Python developers.
 
 ### Key Result 2
 
