@@ -102,7 +102,7 @@ launcher.detach_kernel_driver()
 
 ## Credits
 
-This code is based on the original source available at [https://github.com/hovren/pytshirt](https://github.com/hovren/pytshirt).
+This code is based on the original source available at [https://github.com/hovren/pymissile](https://github.com/hovren/pymissile).
 
 ## License
 
