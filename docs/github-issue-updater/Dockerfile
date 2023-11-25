@@ -13,5 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application's source code from the current directory to /usr/src/app in the container
 COPY . .
 
-# Run the script when the container launches
-CMD ["python", "./update_github_issues.py"]
+# Run the command by exec -it into a shell
