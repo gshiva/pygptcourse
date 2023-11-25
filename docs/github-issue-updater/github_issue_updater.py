@@ -1,7 +1,5 @@
-import argparse
 import json
 
-import pandas as pd
 import requests
 
 # Constants for GitHub repository
@@ -17,28 +15,41 @@ headers = {
 
 
 def list_issues():
-    """List all issues from the repository"""
-    issues_url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues"
-    response = requests.get(issues_url, headers=headers)
-    if response.status_code == 200:
-        try:
-            issues = response.json()
-            return issues
-        except json.JSONDecodeError as e:
-            print(f"Error decoding JSON: {e}")
-            return []
-    else:
-        print(f"Error fetching issues: {response.status_code}")
-        print(response.text)
-        return []  # Return an empty list on error
+    """List all issues from the repository with pagination."""
+    issues = []
+    page = 1
+    while True:
+        issues_url = (
+            f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues?page={page}"
+        )
+        response = requests.get(issues_url, headers=headers)
+        if response.status_code == 200:
+            try:
+                page_issues = response.json()
+                if not page_issues:
+                    break  # No more issues, exit the loop
+                issues.extend(page_issues)
+                page += 1
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON: {e}")
+                return []  # Return an empty list on error
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                return []  # Return an empty list on error
+        else:
+            print(f"Error fetching issues: {response.status_code}")
+            print(response.text)
+            return []  # Return an empty list on error
+
+    return issues
 
 
-def update_issue(issue_number, new_body):
+def update_issue(issue_number, new_title, new_body):
     """Update the issue with a new body"""
     issue_url = (
         f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{issue_number}"
     )
-    data = {"body": new_body}
+    data = {"title": new_title, "body": new_body}
     response = requests.patch(issue_url, headers=headers, json=data)
     if response.status_code == 200:
         try:
@@ -59,28 +70,27 @@ def read_csv(file_path):
 
 
 def main():
-    # Setting up argument parsing
-    parser = argparse.ArgumentParser(
-        description="Read a CSV file and create GitHub issues."
-    )
-    parser.add_argument("csv_file", type=str, help="Path to the CSV file")
-
-    # Parsing arguments
-    args = parser.parse_args()  # Load the updated requirements from the CSV file
-    # Reading the CSV file
-    requirements_df = pd.read_csv(args.csv_file)
-    requirements_dict = requirements_df.set_index("Title")["Body"].to_dict()
-
     print("Starting the program")
     issues = list_issues()
 
+    print(f"Number of issues: {len(issues)}")
+
     for issue in issues:
         title = issue["title"]
+        body = issue["body"]
+
+        new_title = title
+        new_body = body
 
         # Check if the title is in the requirements dictionary
-        if title in requirements_dict:
-            new_body = requirements_dict[title]
-            update_issue(issue["number"], new_body)
+        if "missile" in title:
+            new_title = title.replace("missile", "T-Shirt")
+
+        if "missile" in body:
+            new_body = body.replace("missile", "T-Shirt")
+
+        if title != new_title or body != new_body:
+            update_issue(issue["number"], new_title, new_body)
 
 
 if __name__ == "__main__":
