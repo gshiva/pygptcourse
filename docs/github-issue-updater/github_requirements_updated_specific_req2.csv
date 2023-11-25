@@ -1,0 +1,58 @@
+Title,Body,Labels,Milestone,Assignee,State
+REQ-1: Documentation for setup and deployment,"
+**Acceptance Criteria**
+- Documentation includes setup instructions for the face recognition system, including the installation of necessary libraries (e.g., cv2, face_recognition).
+- Detailed steps for deploying the camera control and T-shirt launcher systems.
+- Information on how to configure the USB connection for the T-shirt launcher.
+- Guidelines for setting image resolution and camera movement parameters.
+","requirements, Documentation, High",3,,open
+REQ-2: Implement user control interface for manual overrides,"
+**Acceptance Criteria**
+- Development of a user interface that allows manual control and overrides of both the camera and the T-shirt launcher.
+- The interface should enable users to manually adjust camera movement (left, right, up, down) and control launcher actions (fire, stop).
+- Real-time response to user inputs, with immediate execution of the manual commands.
+- The interface should be intuitive and user-friendly, with clear instructions and feedback.
+","requirements, Implementation, Medium",3,,open
+REQ-3: Implement T-shirt launcher control logic,"
+**Acceptance Criteria**
+- Control logic for the T-shirt launcher that interprets and executes commands for movement and firing.
+- Integration with a USB device to send commands to the physical launcher.
+- Implementation of safety measures to prevent accidental firing and to stop the launcher when required.
+","requirements, Implementation, High",3,,open
+REQ-4: Integrate face recognition with camera movement,"
+**Acceptance Criteria**
+- Face recognition system that can identify specific individuals from images.
+- Camera movement that responds to the position of the recognized face, adjusting to keep the face centered in the frame.
+- Empirical calculations for camera movement to ensure smooth tracking of the face.
+","requirements, Implementation, High",3,,open
+REQ-5: Develop camera movement logic based on face position,"
+**Acceptance Criteria**
+- Development of logic to move the camera left, right, up, and down based on the position of the recognized face in the video feed.
+- Camera should adjust its position in real-time to ensure the face remains centered in the frame.
+- The logic must be capable of handling different face sizes and distances from the camera.
+","requirements, Implementation, High",3,,open
+REQ-6: Integrate camera movement with T-shirt launcher targeting,"
+**Acceptance Criteria**
+- Integration of the camera's movement logic with the T-shirt launcher's targeting system.
+- Ensuring that the T-shirt launcher aims based on the camera's focus, particularly the position of a recognized face.
+- Synchronization of camera movement and launcher aiming to ensure accurate targeting.
+- The system should be able to track and adjust the launcher's aim in real-time as the target moves.
+","requirements, Implementation, High",3,,open
+REQ-7: Implement safety features for T-shirt launcher,"
+**Acceptance Criteria**
+- Implementation of safety mechanisms to prevent accidental firing of the T-shirt launcher.
+- Safety interlocks that ensure the launcher only fires under safe conditions.
+- Clear indicators or warnings when the launcher is armed or in a ready-to-fire state.
+","requirements, Implementation, Medium",3,,open
+REQ-8: Error handling in face recognition logic,"
+**Acceptance Criteria**
+- Robust error handling for face recognition processes, ensuring stability even with poor image quality or occluded faces.
+- Graceful handling of situations where no faces are detected or multiple faces are present.
+- Logging and notification mechanisms for face recognition failures or anomalies.
+","requirements, Implementation, High",3,,open
+REQ-9: Error handling in camera control logic,"
+**Acceptance Criteria**
+- Comprehensive error handling in the camera control logic to address potential hardware or software failures.
+- Mechanisms to recover from or gracefully handle camera movement errors or malfunctions.
+- Detailed logging of any issues encountered during camera operation for troubleshooting purposes.
+","requirements, Implementation, High",3,,open

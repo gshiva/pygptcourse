@@ -1,0 +1,10 @@
+Title,Body,Labels,Milestone,Assignee,State
+REQ-1: Documentation for setup and deployment,Provide detailed setup and deployment instructions for the entire system.,"requirements, Documentation, High",Implementation,,open
+REQ-2: Implement user control interface for manual overrides,Develop a user interface to allow manual control and overrides of the camera and launcher.,"requirements, Implementation, Medium",Implementation,,open
+REQ-3: Implement T-shirt launcher control logic,"Develop the control logic for operating the T-shirt launcher, including firing and directional controls.","requirements, Implementation, High",Implementation,,open
+REQ-4: Integrate face recognition with camera movement,"Ensure the camera's movement is responsive to the face recognition's output, moving to keep the face centered.","requirements, Implementation, High",Implementation,,open
+REQ-5: Develop camera movement logic based on face position,Create logic to move the camera left/right/up/down based on the position of the recognized face.,"requirements, Implementation, High",Implementation,,open
+REQ-6: Integrate camera movement with T-shirt launcher targeting,Link the camera's movement logic with the T-shirt launcher to aim based on the camera's focus.,"requirements, Implementation, High",Implementation,,open
+REQ-7: Implement safety features for T-shirt launcher,Incorporate safety mechanisms to prevent accidents with the T-shirt launcher.,"requirements, Implementation, Medium",Implementation,,open
+REQ-8: Error handling in face recognition logic,Implement robust error handling and exceptions management in the face recognition module.,"requirements, Implementation, High",Implementation,,open
+REQ-9: Error handling in camera control logic,Develop error handling for the camera control logic to manage potential failures or issues.,"requirements, Implementation, High",Implementation,,open
