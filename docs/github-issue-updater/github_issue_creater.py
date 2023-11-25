@@ -1,28 +1,27 @@
 import argparse
 import csv
-import requests
 import json
 
-# Constants for GitHub repository
-REPO_OWNER = 'gshiva'
-REPO_NAME = 'pygptcourse'
-GITHUB_TOKEN = 'PAT token'  # Personal Access Token
+import requests
 
+# Constants for GitHub repository
+REPO_OWNER = "gshiva"
+REPO_NAME = "pygptcourse"
+GITHUB_TOKEN = "PAT token"  # Personal Access Token
+
+
+# Headers for authorization and to ensure the use of the API v3
 headers = {
-    'Authorization': f'token {GITHUB_TOKEN}',
-    'Accept': 'application/vnd.github.v3+json'
+    "Authorization": f"token {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github.v3+json",
 }
 
-def create_issue(title, body, labels, milestone):
-    """ Create a new issue with the given title, body, labels, and milestone """
-    issue_url = f'https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues'
 
-    data = {
-        'title': title,
-        'body': body,
-        'labels': labels,
-        'milestone': milestone
-    }
+def create_issue(title, body, labels, milestone):
+    """Create a new issue with the given title, body, labels, and milestone"""
+    issue_url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues"
+
+    data = {"title": title, "body": body, "labels": labels, "milestone": milestone}
     response = requests.post(issue_url, headers=headers, json=data)
     if response.status_code == 201:
         try:
@@ -35,16 +34,20 @@ def create_issue(title, body, labels, milestone):
         print(f"Error creating issue: {response.status_code}")
         print(response.text)
 
+
 def read_csv(file_path):
     """Reads a CSV file and returns its content."""
-    with open(file_path, newline='') as csvfile:
+    with open(file_path, newline="") as csvfile:
         reader = csv.reader(csvfile)
         return list(reader)
 
+
 def main():
     # Setting up argument parsing
-    parser = argparse.ArgumentParser(description='Read a CSV file and create GitHub issues.')
-    parser.add_argument('csv_file', type=str, help='Path to the CSV file')
+    parser = argparse.ArgumentParser(
+        description="Read a CSV file and create GitHub issues."
+    )
+    parser.add_argument("csv_file", type=str, help="Path to the CSV file")
 
     # Parsing arguments
     args = parser.parse_args()
@@ -56,8 +59,9 @@ def main():
     for row in csv_content:
         # Title,Body,Labels,Milestone,Assignee,State
         title, body, labels, milestone, assignee, state = row
-        labels = [label.strip() for label in labels.split(',')]
+        labels = [label.strip() for label in labels.split(",")]
         create_issue(title, body, labels, milestone)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
