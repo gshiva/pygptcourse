@@ -1,6 +1,6 @@
 # Tasks for the PyGPTCourse
 
-At a high level we have these tasks to complete 
+At a high level we have these tasks to complete
 
 1. Chapters in the book
 2. Prepare code sample
@@ -20,7 +20,7 @@ At a high level we have these tasks to complete
 Each of these items have a "create, review, fix, publish" steps in them.
 
 - OKRs - Shiva
-    Once we agree on OKRs, get it into the git repo itself  
+    Once we agree on OKRs, get it into the git repo itself
 - Requirements
     Bulk upload all requirements summary into the git repo itself
     If possible, directly create requirements inside git repo
