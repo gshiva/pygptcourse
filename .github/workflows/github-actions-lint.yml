@@ -16,9 +16,9 @@
     pull_request:
       branches: [master, main]
 
-  ###############
-  # Set the Job #
-  ###############
+  ################
+  # Set the Job ##
+  ################
   jobs:
     build:
       # Name the Job
