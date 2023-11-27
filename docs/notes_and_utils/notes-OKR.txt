@@ -1,7 +1,7 @@
 # Some notes when reading through the OKRs
 ------------------------------------------
 
-- OKRs talk a lot about missle and firing. With the recent world events it is best to find alterante examples. Replace the missiles wtih t-shirt cannon at at a basketball event. 
+- OKRs talk a lot about missle and firing. With the recent world events it is best to find alterante examples. Replace the missiles wtih t-shirt cannon at at a basketball event.
 
 - There are 40+ uses of "missile" in the OKRs. Consider renaming
 
@@ -17,5 +17,5 @@
 
 - In Chapter 6, there is a high level statement about PR metrics. Does the book chapter  cover what metrics are of importance? Or is the intent to have chatGPT help in this as well?
 
-- 
+-
 
