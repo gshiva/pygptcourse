@@ -11,8 +11,6 @@
   #############################
   on:
     push:
-      branches-ignore: [master, main]
-      # Remove the line above to run when pushing to master or main
     pull_request:
       branches: [master, main]
 
