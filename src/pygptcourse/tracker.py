@@ -81,6 +81,8 @@ def detect_faces():
 
             face_names.append(name)
     print(f"Face names: {face_names}")
+    cv2.imshow('Video', image)
+
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Because we made the image smaller, now need to multiply by 4 to get correct size
         top *= 4
