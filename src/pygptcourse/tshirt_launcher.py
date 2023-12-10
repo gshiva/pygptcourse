@@ -17,12 +17,13 @@ FIRE = 16
 DOWN = 2
 UP = 1
 
+
 class Launcher(object):
     def __init__(self):
         dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
 
         if dev is None:
-            raise Exception('Could not find USB device')
+            raise Exception("Could not find USB device")
 
         try:
             dev.detach_kernel_driver(0)
@@ -34,13 +35,16 @@ class Launcher(object):
         self.dev = dev
         self.dev.set_configuration()
         self.cfg = dev.get_active_configuration()
-        self.intf = self.cfg[(0,0)]
+        self.intf = self.cfg[(0, 0)]
         self.fire_start_time = time.time()
 
         usb.util.claim_interface(self.dev, self.intf)
 
-        self.ep = usb.util.find_descriptor(self.intf, custom_match=\
-lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+        self.ep = usb.util.find_descriptor(
+            self.intf,
+            custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress)
+            == usb.util.ENDPOINT_IN,
+        )
 
         self.send_command(0)
 
@@ -48,18 +52,17 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
         self.firing = False
 
         self.state = {
-            'up' : False,
-            'down' : False,
-            'left' : False,
-            'right' : False,
-            'fire' : False,
+            "up": False,
+            "down": False,
+            "left": False,
+            "right": False,
+            "fire": False,
         }
 
-
-#        try:
-#            self.dev.reset()
-#        except usb.core.USBError, e:
-#            print("RESET ERROR", e)
+    #        try:
+    #            self.dev.reset()
+    #        except usb.core.USBError, e:
+    #            print("RESET ERROR", e)
 
     def start(self):
         self.running = True
@@ -88,7 +91,7 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
             data = self.read(8)
             # print(data)
             if data:
-                a,b = data[:2]
+                a, b = data[:2]
                 # the data value looks like this: array('B', [0, 24, 0, 0, 0, 0, 0, 0])
                 # the above line takes the first 2 bytes of the array
                 # assigns them to a and b
@@ -105,16 +108,16 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
                 # | UP_LIMIT | -      |    128 |
                 # | DOWN_LIMIT | -      |    64 |
                 RIGHT_LIMIT = (b & 0x08) != 0
-                LEFT_LIMIT  = (b & 0x04) != 0
+                LEFT_LIMIT = (b & 0x04) != 0
                 FIRE_COMPLETED = (b & 0x80) != 0
                 UP_LIMIT = (a & 0x80) != 0
                 DOWN_LIMIT = (a & 0x40) != 0
 
-                self.state['up'] = UP_LIMIT
-                self.state['down'] = DOWN_LIMIT
-                self.state['left'] = LEFT_LIMIT
-                self.state['right'] = RIGHT_LIMIT
-                self.state['fire'] = FIRE_COMPLETED
+                self.state["up"] = UP_LIMIT
+                self.state["down"] = DOWN_LIMIT
+                self.state["left"] = LEFT_LIMIT
+                self.state["right"] = RIGHT_LIMIT
+                self.state["fire"] = FIRE_COMPLETED
 
                 if LEFT_LIMIT and self.command == LEFT:
                     print("All the way left. Sending STOP")
@@ -131,14 +134,17 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
 
                 if FIRE_COMPLETED and self.firing:
                     fire_complete_time = time.time()
-                    print(f"Firing completed in {fire_complete_time-self.fire_start_time} seconds.")
-                    time.sleep(5.0) # waiting too short of a time causes the next firing to end too fast
+                    print(
+                        f"Firing completed in {fire_complete_time-self.fire_start_time} seconds."
+                    )
+                    time.sleep(
+                        5.0
+                    )  # waiting too short of a time causes the next firing to end too fast
                     print("Fire completed. Sending 0")
                     self.send_command(0)
                     self.firing = False
         self.close()
         print("THREAD STOPPED")
-
 
     def read(self, length):
         try:
@@ -168,79 +174,79 @@ lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_I
         usb.util.dispose_resources(self.dev)
 
 
-#// Control of the launcher works on a binary code – see the table below for an explanation
-#//
-#// | 16 | 8 | 4 | 2 | 1 |
-#// |——|—|—|—|—|
-#// | 0 | 0 | 0 | 0 | 1 | 1 – Up
-#// | 0 | 0 | 0 | 1 | 0 | 2 – Down
-#// | 0 | 0 | 0 | 1 | 1 | 3 – nothing
-#// | 0 | 0 | 1 | 0 | 0 | 4 – Left
-#// | 0 | 0 | 1 | 0 | 1 | 5 – Up / Left
-#// | 0 | 0 | 1 | 1 | 0 | 6 – Down / left
-#// | 0 | 0 | 1 | 1 | 1 | 7 – Slow left
-#// | 0 | 1 | 0 | 0 | 0 | 8 – Right
-#// | 0 | 1 | 0 | 0 | 1 | 9 – Up / Right
-#// | 0 | 1 | 0 | 1 | 0 | 10 – Down / Right
-#// | 0 | 1 | 0 | 1 | 1 | 11 – Slow Right
-#// | 0 | 1 | 1 | 0 | 0 | 12 – nothing
-#// | 0 | 1 | 1 | 0 | 1 | 13 – Slow Up
-#// | 0 | 1 | 1 | 1 | 0 | 14 – Slow Down
-#// | 0 | 1 | 1 | 1 | 1 | 15 – Stop
-#// | 1 | 0 | 0 | 0 | 0 | 16 – Fire
-#//
-#// | Fire |RT |LT |DN |UP |
+# // Control of the launcher works on a binary code – see the table below for an explanation
+# //
+# // | 16 | 8 | 4 | 2 | 1 |
+# // |——|—|—|—|—|
+# // | 0 | 0 | 0 | 0 | 1 | 1 – Up
+# // | 0 | 0 | 0 | 1 | 0 | 2 – Down
+# // | 0 | 0 | 0 | 1 | 1 | 3 – nothing
+# // | 0 | 0 | 1 | 0 | 0 | 4 – Left
+# // | 0 | 0 | 1 | 0 | 1 | 5 – Up / Left
+# // | 0 | 0 | 1 | 1 | 0 | 6 – Down / left
+# // | 0 | 0 | 1 | 1 | 1 | 7 – Slow left
+# // | 0 | 1 | 0 | 0 | 0 | 8 – Right
+# // | 0 | 1 | 0 | 0 | 1 | 9 – Up / Right
+# // | 0 | 1 | 0 | 1 | 0 | 10 – Down / Right
+# // | 0 | 1 | 0 | 1 | 1 | 11 – Slow Right
+# // | 0 | 1 | 1 | 0 | 0 | 12 – nothing
+# // | 0 | 1 | 1 | 0 | 1 | 13 – Slow Up
+# // | 0 | 1 | 1 | 1 | 0 | 14 – Slow Down
+# // | 0 | 1 | 1 | 1 | 1 | 15 – Stop
+# // | 1 | 0 | 0 | 0 | 0 | 16 – Fire
+# //
+# // | Fire |RT |LT |DN |UP |
 
 # Max Range in seconds for launcher
-#Right<->Left Max Range = 26
-#Up<->Down Max Range = 4
+# Right<->Left Max Range = 26
+# Up<->Down Max Range = 4
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     launcher = Launcher()
 
     launcher.start()
 
     print("Starting command loop")
     while True:
-        prompt = '{} {} {} {} {}'.format(
-            'L' if launcher.state['left'] else ' ',
-            'R' if launcher.state['right'] else ' ',
-            'U' if launcher.state['up'] else ' ',
-            'D' if launcher.state['down'] else ' ',
-            'F' if launcher.state['fire'] else ' '
+        prompt = "{} {} {} {} {}".format(
+            "L" if launcher.state["left"] else " ",
+            "R" if launcher.state["right"] else " ",
+            "U" if launcher.state["up"] else " ",
+            "D" if launcher.state["down"] else " ",
+            "F" if launcher.state["fire"] else " ",
         )
         try:
-            s = input('{}>> '.format(prompt)).strip()
+            s = input("{}>> ".format(prompt)).strip()
             print(f"Received command {s}")
             cmd, delay = s.split()
             delay = float(delay)
         except EOFError:
-            cmd = 'quit'
+            cmd = "quit"
         except ValueError:
             cmd = s
             delay = 0
 
-        if cmd == 'quit':
+        if cmd == "quit":
             break
 
-        if cmd in 'rlud' and delay > 0:
+        if cmd in "rlud" and delay > 0:
             print(f"Sending command {cmd}")
-            if cmd == 'r':
+            if cmd == "r":
                 launcher.send_command(RIGHT)
-            if cmd == 'l':
+            if cmd == "l":
                 launcher.send_command(LEFT)
-            if cmd == 'u':
-                if launcher.state['up']:
+            if cmd == "u":
+                if launcher.state["up"]:
                     delay = 0
                 else:
                     launcher.send_command(UP)
-            if cmd == 'd':
+            if cmd == "d":
                 launcher.send_command(DOWN)
 
             time.sleep(delay)
             launcher.send_command(STOP)
 
-        if cmd == 'f':
+        if cmd == "f":
             launcher.firing = True
             launcher.fire_start_time = time.time()
             launcher.send_command(FIRE)

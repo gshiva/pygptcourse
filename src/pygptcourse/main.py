@@ -43,6 +43,7 @@ current_image_position = [IMAGE_WIDTH, IMAGE_HEIGHT]
 # camera movement time increment
 TIME_INCREMENT = 0.1
 
+
 def move_camera(direction, duration):
     global current_camera_position
     cmd = STOP
@@ -84,13 +85,19 @@ def move_camera(direction, duration):
     current_camera_position[0] = max(0, min(current_camera_position[0], TOTAL_TIME_LR))
     current_camera_position[1] = max(0, min(current_camera_position[1], TOTAL_TIME_TB))
 
-    print(f"Previous position: {prev_current_camera_position} Calculated current position: {current_camera_position}, Direction: {direction}, Duration: {duration}")
+    print(
+        f"Previous position: {prev_current_camera_position} Calculated current position: {current_camera_position}, Direction: {direction}, Duration: {duration}"
+    )
 
     if prev_current_camera_position == current_camera_position:
         # nothing to do
-        print(f"Nothing to do. Current position: {current_camera_position} is same as previous position {prev_current_camera_position}.")
+        print(
+            f"Nothing to do. Current position: {current_camera_position} is same as previous position {prev_current_camera_position}."
+        )
         return
-    print(f"Moving to position: {current_camera_position}, Direction: {direction}, Duration: {duration}")
+    print(
+        f"Moving to position: {current_camera_position}, Direction: {direction}, Duration: {duration}"
+    )
     launcher.move(cmd, duration)
 
 
@@ -106,12 +113,12 @@ def move_camera_to_center():
     move_camera("DOWN", TOTAL_TIME_TB)
 
     # set the current position to the known bottom left position
-    current_camera_position = [0,TOTAL_TIME_TB]
+    current_camera_position = [0, TOTAL_TIME_TB]
 
     # we are sure that the camera is on the bottom left
     # now move it to the center (13,2)
-    move_camera("RIGHT", TOTAL_TIME_LR/2)
-    move_camera("UP", TOTAL_TIME_TB/2)
+    move_camera("RIGHT", TOTAL_TIME_LR / 2)
+    move_camera("UP", TOTAL_TIME_TB / 2)
 
 
 launcher.start()
@@ -123,7 +130,6 @@ while True:
     if not ret:
         break
 
-
     # Reduce face size to make calculations easier
     small_frame = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
 
@@ -134,7 +140,9 @@ while True:
 
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
-            match = face_recognition.compare_faces([shiva_face_encoding, adil_face_encoding], face_encoding)
+            match = face_recognition.compare_faces(
+                [shiva_face_encoding, adil_face_encoding], face_encoding
+            )
             name = "Unknown"
 
             if match[0]:
@@ -155,14 +163,35 @@ while True:
         cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
         face_center = [(left + right) // 2, (top + bottom) // 2]
 
-
-        name = name + " center:" + str(face_center) + " r:" + str(right) + ", b:" + str(bottom) + ", l:" + str(left) + ", t:" + str(top)
+        name = (
+            name
+            + " center:"
+            + str(face_center)
+            + " r:"
+            + str(right)
+            + ", b:"
+            + str(bottom)
+            + ", l:"
+            + str(left)
+            + ", t:"
+            + str(top)
+        )
 
         print(f"Name: {name}")
 
         # Draw a label with a name below the face
-        cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        cv2.putText(image, name, (left + 6, bottom - 6),  cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 1)
+        cv2.rectangle(
+            image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED
+        )
+        cv2.putText(
+            image,
+            name,
+            (left + 6, bottom - 6),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1.0,
+            (255, 255, 255),
+            1,
+        )
 
         face_bbox = [top, right, bottom, left]
 
@@ -173,11 +202,14 @@ while True:
         # to get the x-coordinate of the center, and adding the top and bottom values and dividing by 2 to get the y-coordinate
         # of the center. The result is a list containing the x and y coordinates of the center of the bounding box.
 
-        face_center = [(face_bbox[1] + face_bbox[3]) // 2, (face_bbox[0] + face_bbox[2]) // 2]
+        face_center = [
+            (face_bbox[1] + face_bbox[3]) // 2,
+            (face_bbox[0] + face_bbox[2]) // 2,
+        ]
 
         # Calculate the distance from the face center to the image center
-        dx = face_center[0] - (IMAGE_WIDTH/2)
-        dy = face_center[1] - (IMAGE_HEIGHT/2)
+        dx = face_center[0] - (IMAGE_WIDTH / 2)
+        dy = face_center[1] - (IMAGE_HEIGHT / 2)
 
         # emprical calculations which came to 120 pixels both along the height and width
         # from the center of the image
@@ -187,7 +219,7 @@ while True:
         # CENTERX_MIN = round((IMAGE_WIDTH/2) - (IMAGE_WIDTH/(5*2)))
         # CENTERX_MAX = round((IMAGE_WIDTH/2) + (IMAGE_WIDTH/(4*2)))
 
-        TOLERANCE = (IMAGE_HEIGHT / (4*2)) # for 480 it is 60
+        TOLERANCE = IMAGE_HEIGHT / (4 * 2)  # for 480 it is 60
 
         # Move the camera in small steps in the x direction based on the distance from the face center
         print(f"face center: {face_center} face_bbox = {face_bbox} dx: {dx}, dy: {dy}")
@@ -201,9 +233,9 @@ while True:
         if dy < -TOLERANCE:
             move_camera("UP", TIME_INCREMENT)
 
-    cv2.imshow('Video', image)
+    cv2.imshow("Video", image)
     counter += 1
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 video_capture.release()
