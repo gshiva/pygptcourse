@@ -43,6 +43,18 @@ This repository contains Python code for launching micro T-Shirts to a particula
 
    Follow the instructions in [AdaFruit's instruction for fixing `no backend error`](https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/windows#test-pyusb-and-pyftdi-3041697). It involves downloading [libusb](https://sourceforge.net/projects/libusb/) and copying it to `C:\Windows\System32\` directory.
 
+   1. Mac:
+   Most likely you will run into `No backend available` errors.
+
+   Follow the instructions in [stack overflow article](https://stackoverflow.com/questions/70729330/python-on-m1-mbp-trying-to-connect-to-usb-devices-nobackenderror-no-backend-a) and run the following.
+
+   ```bash
+   brew install libusb
+   # The above is not sufficient. The libraries installed by brew is not visible to pyusb.
+   # Run the following to make the library available
+   ln -s /opt/homebrew/lib ~/lib
+   ```
+
 1. Connect the T-Shirt launcher via USB.
 
 ## Usage
