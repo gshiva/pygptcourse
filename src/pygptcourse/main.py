@@ -91,7 +91,6 @@ def move_camera(direction, duration):
         print(f"Nothing to do. Current position: {current_camera_position} is same as previous position {prev_current_camera_position}.")
         return
     print(f"Moving to position: {current_camera_position}, Direction: {direction}, Duration: {duration}")
-    # TODO: issue usb move command
     launcher.move(cmd, duration)
 
 
