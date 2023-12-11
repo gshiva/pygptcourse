@@ -59,7 +59,7 @@ def detect_faces():
     face_encodings = []
 
     ret, image = video_capture.read()
-    print(f"Video captured")
+    print("Video captured")
 
     if not ret:
         return []
@@ -148,31 +148,41 @@ def move_camera(direction, duration):
     # Make sure the current position is within the image bounds
     # Explanation from ChatGPT
     # These lines of code ensure that the current position of the camera is within the bounds of the image.
-    # The current_camera_position variable is a list that stores the x and y coordinates of the current position of the camera.
-    # The first line of code sets the x coordinate of current_camera_position to be within the range [0, TOTAL_TIME_LR],
+    # The current_camera_position variable is a list that stores the x and y coordinates of the current
+    # position of the camera.
+    # The first line of code sets the x coordinate of current_camera_position to be within the
+    # range [0, TOTAL_TIME_LR],
     # and the second line sets the y coordinate to be within the range [0, TOTAL_TIME_LR].
     # The max and min functions are used to achieve this.
     # The min function takes two arguments and returns the smaller of the two.
     # In this case, it is used to ensure that the x and y coordinates of current_camera_position
     # do not exceed TOTAL_TIME_LR and TOTAL_TIME_LR, respectively.
     # The max function takes two arguments and returns the larger of the two.
-    # In this case, it is used to ensure that the x and y coordinates of current_camera_position do not fall below 0.
+    # In this case, it is used to ensure that the x and y coordinates of current_camera_position
+    # do not fall below 0.
     # For example, if current_camera_position[0] is greater than TOTAL_TIME_LR,
-    # then min(current_camera_position[0], TOTAL_TIME_LR) will return TOTAL_TIME_LR, ensuring that the x coordinate of current_camera_position
-    # does not exceed the camera left to right limits. Similarly, if current_camera_position[1] is less than 0, then
-    # max(0, current_camera_position[1]) will return 0, ensuring that the y coordinate of current_camera_position does not fall below 0.
+    # then min(current_camera_position[0], TOTAL_TIME_LR) will return TOTAL_TIME_LR, ensuring that
+    # the x coordinate of current_camera_position
+    # does not exceed the camera left to right limits. Similarly, if current_camera_position[1] is less
+    # than 0, then
+    # max(0, current_camera_position[1]) will return 0, ensuring that the y coordinate of
+    # current_camera_position does not fall below 0.
 
     current_camera_position[0] = max(0, min(current_camera_position[0], TOTAL_TIME_LR))
     current_camera_position[1] = max(0, min(current_camera_position[1], TOTAL_TIME_TB))
 
     print(
-        f"Previous position: {prev_current_camera_position} Calculated current position: {current_camera_position}, Direction: {direction}, Duration: {duration}"
+        f"Previous position: {prev_current_camera_position} "
+        f"Calculated current position: {current_camera_position}, "
+        f"Direction: {direction}, "
+        f"Duration: {duration}"
     )
 
     if prev_current_camera_position == current_camera_position:
         # nothing to do
         print(
-            f"Nothing to do. Current position: {current_camera_position} is same as previous position {prev_current_camera_position}."
+            f"Nothing to do. Current position: {current_camera_position} "
+            f"is same as previous position {prev_current_camera_position}."
         )
         return
     print(
@@ -184,7 +194,8 @@ def move_camera(direction, duration):
 def track_face():
     global current_camera_position
 
-    # Detect faces in the frame using OpenCV (this code is just an example and needs to be updated with your own face detection code)
+    # Detect faces in the frame using OpenCV (this code is just an example
+    # and needs to be updated with your own face detection code)
     faces = detect_faces()
 
     # If a face was detected, track it using the track_face function
@@ -192,10 +203,14 @@ def track_face():
         face_bbox = faces[0]
 
         # Calculate the center of the face bounding box
-        # The face_recognition library returns the bounding box of a face in an image as a tuple of four values (top, right, bottom, left).
-        # The following code calculates the center of the bounding box by taking the average of the left and right values and
-        # the average of the top and bottom values. This is done by adding the right and left values and dividing by 2
-        # to get the x-coordinate of the center, and adding the top and bottom values and dividing by 2 to get the y-coordinate
+        # The face_recognition library returns the bounding box of a face in an image as a tuple of
+        # four values (top, right, bottom, left).
+        # The following code calculates the center of the bounding box by taking the average of the
+        # left and right values and
+        # the average of the top and bottom values. This is done by adding the
+        # right and left values and dividing by 2
+        # to get the x-coordinate of the center, and adding the top and bottom values
+        # and dividing by 2 to get the y-coordinate
         # of the center. The result is a list containing the x and y coordinates of the center of the bounding box.
 
         face_center = [

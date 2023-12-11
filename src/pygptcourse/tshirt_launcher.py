@@ -1,8 +1,8 @@
 # original source from https://github.com/hovren/pymissile
-#!/usr/bin/env python3
+#!/usr/bin/env python3 # noqa
 # encoding: utf8
-import time
 import threading
+import time
 
 import usb.core  # type: ignore
 import usb.util  # type: ignore
