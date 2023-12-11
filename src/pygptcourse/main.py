@@ -223,7 +223,7 @@ while True:
         dx = face_center[0] - (IMAGE_WIDTH / 2)
         dy = face_center[1] - (IMAGE_HEIGHT / 2)
 
-        # emprical calculations which came to 120 pixels both along the height and width
+        # Empirical calculations which came to 120 pixels both along the height and width
         # from the center of the image
         # That is 60 pixels in either direction
         # to keep it more image resolution friendly using 5:4 aspect ratio
