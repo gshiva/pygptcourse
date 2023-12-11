@@ -23,7 +23,7 @@ class Launcher(object):
         dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
 
         if dev is None:
-            raise Exception("Could not find USB device")
+            raise RuntimeError("Could not find USB device")
 
         try:
             dev.detach_kernel_driver(0)
@@ -72,8 +72,6 @@ class Launcher(object):
 
     def stop(self):
         self.running = False
-        print("Stopping the thread")
-        self.t.stop()
         print("Thread stopped")
 
     def read_process(self):
@@ -170,6 +168,7 @@ class Launcher(object):
     # added to see if this would fix the overheating problem
     # after the program exits when connected to a Mac
     def close(self):
+        self.stop()
         print("Closing connection")
         usb.util.dispose_resources(self.dev)
 
