@@ -1,5 +1,5 @@
 import cv2
-import face_recognition
+import face_recognition # type: ignore
 
 # Set the total time for moving from left to right and top to bottom
 TOTAL_TIME_LR = 26

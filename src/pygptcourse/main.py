@@ -2,7 +2,7 @@
 
 import cv2
 
-import face_recognition
+import face_recognition # type: ignore
 
 from pygptcourse.tshirt_launcher import Launcher
 from pygptcourse.tshirt_launcher import RIGHT, LEFT, STOP, FIRE, DOWN, UP

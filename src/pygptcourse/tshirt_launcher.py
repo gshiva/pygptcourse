@@ -4,8 +4,8 @@
 import time
 import threading
 
-import usb.core
-import usb.util
+import usb.core # type: ignore
+import usb.util # type: ignore
 
 VENDOR = 0x1941
 PRODUCT = 0x8021
@@ -212,8 +212,8 @@ if __name__ == '__main__':
         try:
             s = input('{}>> '.format(prompt)).strip()
             print(f"Received command {s}")
-            cmd, delay = s.split()
-            delay = float(delay)
+            cmd, delay_str = s.split()
+            delay = float(delay_str)
         except EOFError:
             cmd = 'quit'
         except ValueError:
