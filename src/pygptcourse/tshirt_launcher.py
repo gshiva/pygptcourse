@@ -165,6 +165,14 @@ class Launcher(object):
         except usb.core.USBError as e:
             print("SEND ERROR", e)
 
+    def fire(self):
+        try:
+            self.firing = True
+            self.fire_start_time = time.time()
+            self.send_command(FIRE)
+        except Exception as e:
+            print(f"Error issuing fire command. Exception: {e}")
+
     # added to see if this would fix the overheating problem
     # after the program exits when connected to a Mac
     def close(self):

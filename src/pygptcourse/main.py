@@ -1,4 +1,4 @@
-#!/usr/bin/python
+import time
 
 import cv2
 import face_recognition  # type: ignore
@@ -23,6 +23,8 @@ center_y = 0
 
 face_center_x = 0
 face_center_y = 0
+
+fire_count = 0
 
 launcher = Launcher()
 
@@ -118,6 +120,11 @@ def move_camera_to_center():
     # bottom left is 0,TOTAL_TIME_TB and bottom right is TOTAL_TIME_TB, TOTAL_TIME_TB
     # first move it to bottom left (0,TOTAL_TIME_TB)
     move_camera("LEFT", TOTAL_TIME_LR)
+    time.sleep(0.1)
+    move_camera("DOWN", TOTAL_TIME_TB)
+    time.sleep(0.1)
+    # hack to make sure it goes down for sure
+    current_camera_position[1] = 0
     move_camera("DOWN", TOTAL_TIME_TB)
 
     # set the current position to the known bottom left position
@@ -131,126 +138,151 @@ def move_camera_to_center():
 
 launcher.start()
 move_camera_to_center()
+try:
+    while True:
+        ret, image = video_capture.read()
 
-while True:
-    ret, image = video_capture.read()
+        if not ret:
+            break
 
-    if not ret:
-        break
+        # Reduce face size to make calculations easier
+        small_frame = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
 
-    # Reduce face size to make calculations easier
-    small_frame = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
-
-    # to save cpu, only do calculations once every 10 frames
-    if counter % 3 == 0:
-        face_locations = face_recognition.face_locations(small_frame)
-        face_encodings = face_recognition.face_encodings(small_frame, face_locations)
-
-        for face_encoding in face_encodings:
-            # See if the face is a match for the known face(s)
-            match = face_recognition.compare_faces(
-                [shiva_face_encoding, adil_face_encoding], face_encoding
+        # to save cpu, only do calculations once every 10 frames
+        if counter % 3 == 0:
+            face_locations = face_recognition.face_locations(small_frame)
+            face_encodings = face_recognition.face_encodings(
+                small_frame, face_locations
             )
-            name = "Unknown"
 
-            if match[0]:
-                name = "shiva"
-            elif match[1]:
-                name = "adil"
+            for face_encoding in face_encodings:
+                # See if the face is a match for the known face(s)
+                match = face_recognition.compare_faces(
+                    [shiva_face_encoding, adil_face_encoding], face_encoding
+                )
+                name = "Unknown"
 
-            face_names.append(name)
+                if match[0]:
+                    name = "shiva"
+                elif match[1]:
+                    name = "adil"
 
-        print(f"Face locations: {face_locations}")
+                face_names.append(name)
 
-    for (top, right, bottom, left), name in zip(face_locations, face_names):
-        # Because we made the image smaller, now need to multiply by 4 to get correct size
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
-        cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
-        face_center = [(left + right) // 2, (top + bottom) // 2]
+            # print(f"Face locations: {face_locations}")
 
-        name = (
-            name
-            + " center:"
-            + str(face_center)
-            + " r:"
-            + str(right)
-            + ", b:"
-            + str(bottom)
-            + ", l:"
-            + str(left)
-            + ", t:"
-            + str(top)
-        )
+        for (top, right, bottom, left), name in zip(face_locations, face_names):
+            # Because we made the image smaller, now need to multiply by 4 to get correct size
+            top *= 4
+            right *= 4
+            bottom *= 4
+            left *= 4
+            cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
+            face_center = [(left + right) // 2, (top + bottom) // 2]
 
-        print(f"Name: {name}")
+            face_name = name
+            name = (
+                name
+                + " center:"
+                + str(face_center)
+                + " r:"
+                + str(right)
+                + ", b:"
+                + str(bottom)
+                + ", l:"
+                + str(left)
+                + ", t:"
+                + str(top)
+            )
 
-        # Draw a label with a name below the face
-        cv2.rectangle(
-            image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED
-        )
-        cv2.putText(
-            image,
-            name,
-            (left + 6, bottom - 6),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            1.0,
-            (255, 255, 255),
-            1,
-        )
+            print(f"Name: {name}")
 
-        face_bbox = [top, right, bottom, left]
+            # Draw a label with a name below the face
+            cv2.rectangle(
+                image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED
+            )
+            cv2.putText(
+                image,
+                name,
+                (left + 6, bottom - 6),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                (255, 255, 255),
+                1,
+            )
 
-        # Calculate the center of the face bounding box
-        # The face_recognition library returns the bounding box of a face in an image as a tuple of
-        # four values (top, right, bottom, left).
-        # The following code calculates the center of the bounding box by taking the average of the
-        # left and right values and
-        # the average of the top and bottom values. This is done by adding the
-        # right and left values and dividing by 2
-        # to get the x-coordinate of the center, and adding the top and bottom values
-        # and dividing by 2 to get the y-coordinate
-        # of the center. The result is a list containing the x and y coordinates of the center of the bounding box.
+            face_bbox = [top, right, bottom, left]
 
-        face_center = [
-            (face_bbox[1] + face_bbox[3]) // 2,
-            (face_bbox[0] + face_bbox[2]) // 2,
-        ]
+            # Calculate the center of the face bounding box
+            # The face_recognition library returns the bounding box of a face in an image as a tuple of
+            # four values (top, right, bottom, left).
+            # The following code calculates the center of the bounding box by taking the average of the
+            # left and right values and
+            # the average of the top and bottom values. This is done by adding the
+            # right and left values and dividing by 2
+            # to get the x-coordinate of the center, and adding the top and bottom values
+            # and dividing by 2 to get the y-coordinate
+            # of the center. The result is a list containing the x and y coordinates of the center of the bounding box.
 
-        # Calculate the distance from the face center to the image center
-        dx = face_center[0] - (IMAGE_WIDTH / 2)
-        dy = face_center[1] - (IMAGE_HEIGHT / 2)
+            face_center = [
+                (face_bbox[1] + face_bbox[3]) // 2,
+                (face_bbox[0] + face_bbox[2]) // 2,
+            ]
 
-        # Empirical calculations which came to 120 pixels both along the height and width
-        # from the center of the image
-        # That is 60 pixels in either direction
-        # to keep it more image resolution friendly using 5:4 aspect ratio
-        # based on more feedback with different resolutions this can be improved upon.
-        # CENTERX_MIN = round((IMAGE_WIDTH/2) - (IMAGE_WIDTH/(5*2)))
-        # CENTERX_MAX = round((IMAGE_WIDTH/2) + (IMAGE_WIDTH/(4*2)))
+            # Calculate the distance from the face center to the image center
+            dx = face_center[0] - (IMAGE_WIDTH / 2)
+            dy = face_center[1] - (IMAGE_HEIGHT / 2)
 
-        TOLERANCE = IMAGE_HEIGHT / (4 * 2)  # for 480 it is 60
+            # Empirical calculations which came to 120 pixels both along the height and width
+            # from the center of the image
+            # That is 60 pixels in either direction
+            # to keep it more image resolution friendly using 5:4 aspect ratio
+            # based on more feedback with different resolutions this can be improved upon.
+            # CENTERX_MIN = round((IMAGE_WIDTH/2) - (IMAGE_WIDTH/(5*2)))
+            # CENTERX_MAX = round((IMAGE_WIDTH/2) + (IMAGE_WIDTH/(4*2)))
 
-        # Move the camera in small steps in the x direction based on the distance from the face center
-        print(f"face center: {face_center} face_bbox = {face_bbox} dx: {dx}, dy: {dy}")
-        if dx > TOLERANCE:
-            move_camera("RIGHT", TIME_INCREMENT)
-        elif dx < -TOLERANCE:
-            move_camera("LEFT", TIME_INCREMENT)
-        # Move the camera in small steps in the y direction based on the distance from the face center
-        if dy > TOLERANCE:
-            move_camera("DOWN", TIME_INCREMENT)
-        if dy < -TOLERANCE:
-            move_camera("UP", TIME_INCREMENT)
+            TOLERANCE = IMAGE_HEIGHT / (4 * 2)  # for 480 it is 60
 
-    cv2.imshow("Video", image)
-    counter += 1
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+            # Move the camera in small steps in the x direction based on the distance from the face center
+            print(
+                f"face center: {face_center} face_bbox = {face_bbox} dx: {dx}, dy: {dy}"
+            )
+            moving = False
+            if dx > TOLERANCE:
+                move_camera("RIGHT", TIME_INCREMENT)
+                moving = True
+            elif dx < -TOLERANCE:
+                move_camera("LEFT", TIME_INCREMENT)
+                moving = True
+            # Move the camera in small steps in the y direction based on the distance from the face center
+            if dy > TOLERANCE:
+                move_camera("DOWN", TIME_INCREMENT)
+                moving = True
+            if dy < -TOLERANCE:
+                move_camera("UP", TIME_INCREMENT)
+                moving = True
 
-video_capture.release()
-cv2.destroyAllWindows()
-launcher.running = False
-launcher.close()
+            print(
+                f"Condition face_name is shiva {face_name} and fire count {fire_count} less than 2: \n"
+                f"{face_name == 'shiva' and fire_count < 2 and (not moving)}"
+            )
+
+            if not moving:
+                time.sleep(1)
+                print(
+                    f"Target {face_name} acquired. Firing. Missiles fired: {fire_count}"
+                )
+                launcher.fire()
+                fire_count += 1
+
+        cv2.imshow("Video", image)
+        counter += 1
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+except Exception as e:
+    print(f"Caught exception {e}")
+finally:
+    video_capture.release()
+    cv2.destroyAllWindows()
+    launcher.running = False
+    launcher.close()
