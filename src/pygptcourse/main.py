@@ -2,7 +2,6 @@ import time
 
 import cv2
 import face_recognition  # type: ignore
-
 from pygptcourse.tshirt_launcher import DOWN, LEFT, RIGHT, STOP, UP, Launcher
 
 shiva_image = face_recognition.load_image_file("shiva_face.jpg")
