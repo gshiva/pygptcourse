@@ -18,4 +18,3 @@
 - In Chapter 6, there is a high level statement about PR metrics. Does the book chapter  cover what metrics are of importance? Or is the intent to have chatGPT help in this as well?
 
 -
-
