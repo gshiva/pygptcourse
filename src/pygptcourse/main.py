@@ -1,14 +1,12 @@
 import time
 
 import cv2
-import face_recognition  # type: ignore
+
+from pygptcourse.face_detector import FaceDetector
 from pygptcourse.tshirt_launcher import DOWN, LEFT, RIGHT, STOP, UP, Launcher
 
-shiva_image = face_recognition.load_image_file("shiva_face.jpg")
-shiva_face_encoding = face_recognition.face_encodings(shiva_image)[0]
-
-adil_image = face_recognition.load_image_file("adil_face.jpg")
-adil_face_encoding = face_recognition.face_encodings(adil_image)[0]
+# Initialize FaceDetector with a dictionary of known faces
+face_detector = FaceDetector({"Shiva": "shiva_face.jpg", "Adil": "adil_face.jpg"})
 
 video_capture = cv2.VideoCapture(0)
 video_capture.set(3, 640)  # Set horizontal resolution
@@ -149,26 +147,7 @@ try:
 
         # to save cpu, only do calculations once every 10 frames
         if counter % 3 == 0:
-            face_locations = face_recognition.face_locations(small_frame)
-            face_encodings = face_recognition.face_encodings(
-                small_frame, face_locations
-            )
-
-            for face_encoding in face_encodings:
-                # See if the face is a match for the known face(s)
-                match = face_recognition.compare_faces(
-                    [shiva_face_encoding, adil_face_encoding], face_encoding
-                )
-                name = "Unknown"
-
-                if match[0]:
-                    name = "shiva"
-                elif match[1]:
-                    name = "adil"
-
-                face_names.append(name)
-
-            # print(f"Face locations: {face_locations}")
+            face_locations, face_names = face_detector.detect_faces(small_frame)
 
         for (top, right, bottom, left), name in zip(face_locations, face_names):
             # Because we made the image smaller, now need to multiply by 4 to get correct size
@@ -194,7 +173,9 @@ try:
                 + str(top)
             )
 
-            print(f"Name: {name}")
+            print(
+                f"Name: {name}, drawing a label with coordinates: ({left}, {bottom - 35}), ({right}, {bottom})"
+            )
 
             # Draw a label with a name below the face
             cv2.rectangle(
