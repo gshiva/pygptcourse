@@ -9,7 +9,10 @@ To see the prompts used, see <https://chat.openai.com/share/e71885d2-8639-409d-b
 
 ## Micro T-Shirt Launcher
 
-This repository contains Python code for launching micro T-Shirts to a particular person identified through face recognition. The launcher positions itself using it's pan and tilt capabilities to launch the micro T-Shirt towards the identified person's location. The micro T-Shirt launcher does not launch T-Shirt if the person is not in the pre-loaded facial image set. The ability to develop, test and debug the launcher and facial recognition functionality independently is present.
+This repository contains Python code for launching micro T-Shirts to a particular person identified through face recognition.
+The launcher positions itself using it's pan and tilt capabilities to launch the micro T-Shirt towards the identified person's location.
+The micro T-Shirt launcher does not launch T-Shirt if the person is not in the pre-loaded facial image set.
+The ability to develop, test and debug the launcher and facial recognition functionality independently is present.
 
 ## Requirements
 
@@ -191,7 +194,13 @@ To debug `tracker.py` using Visual Studio Code:
 
 ### Code Duplication between `main.py` and `tracker.py`
 
-In this version of the code, an astute reader may notice code duplication between `main.py` and `tracker.py`. The face tracking code and `move_camera` function code is copy/pasted from `tracker.py` to `main.py`. It was done both by accident and intention. The initial implementation of tracker.py was focused on developing the OpenCV functionality on a machine that did not have the USB device attached. Once the testing was complete, it was easier to copy/paste code rather than a modular integration. It was supposed to be a temporary solution. Life intervenes and is present for months now. Repackaging the accidental tech-debt as intentional, this would be a scenario very common in software where the 'temporary' solution becomes 'permanent'. More fixes are done to now 'permanent' solution 'just for this release' resulting in spaghetti code that nobody wants to touch. In the next iterations we will see how ChatGPT can help in refactoring code safely.
+In this version of the code, an astute reader may notice code duplication between `main.py` and `tracker.py`.
+The face tracking code and `move_camera` function code is copy/pasted from `tracker.py` to `main.py`. It was done both by accident and intention.
+The initial implementation of tracker.py was focused on developing the OpenCV functionality on a machine that did not have the USB device attached.
+Once the testing was complete, it was easier to copy/paste code rather than a modular integration.
+It was supposed to be a temporary solution.
+Life intervenes and is present for months now. Repackaging the accidental tech-debt as intentional, this would be a scenario very common in software where the 'temporary' solution becomes 'permanent'.
+More fixes are done to now 'permanent' solution 'just for this release' resulting in spaghetti code that nobody wants to touch. In the next iterations we will see how ChatGPT can help in refactoring code safely.
 
 #### Code Duplication Rationale
 
