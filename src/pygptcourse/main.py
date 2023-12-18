@@ -1,14 +1,21 @@
+import argparse
+
 import cv2
 
 from pygptcourse.camera_control import CameraControl
 from pygptcourse.camera_manager import CameraManager
 from pygptcourse.face_detector import FaceDetector
 
+parser = argparse.ArgumentParser(description="Run the camera control system.")
+parser.add_argument("--simulate", action="store_true", help="Run in simulation mode.")
+args = parser.parse_args()
+
+
 # Initialize FaceDetector with a dictionary of known faces
 face_detector = FaceDetector({"Shiva": "shiva_face.jpg", "Adil": "adil_face.jpg"})
 
 # Initialize CameraControl and CameraManager
-camera_control = CameraControl(simulation_mode=False)
+camera_control = CameraControl(simulation_mode=args.simulate)
 camera_manager = CameraManager()
 
 counter = 0

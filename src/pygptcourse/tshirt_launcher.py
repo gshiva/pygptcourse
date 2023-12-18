@@ -1,6 +1,7 @@
 # original source from https://github.com/hovren/pymissile
 #!/usr/bin/env python3 # noqa
 # encoding: utf8
+import abc
 import threading
 import time
 
@@ -18,7 +19,56 @@ DOWN = 2
 UP = 1
 
 
-class Launcher(object):
+class AbstractLauncher(abc.ABC):
+    @abc.abstractmethod
+    def send_command(self, command):
+        pass
+
+    @abc.abstractmethod
+    def start(self):
+        pass
+
+    @abc.abstractmethod
+    def stop(self):
+        pass
+
+    @abc.abstractmethod
+    def fire(self):
+        pass
+
+    @abc.abstractmethod
+    def move(self, command, duration):
+        pass
+
+    @abc.abstractmethod
+    def close(self):
+        pass
+
+
+class SimulatedLauncher(AbstractLauncher):
+    def __init__(self):
+        super().__init__()
+
+    def send_command(self, command):
+        print(f"Simulated sending command {command}")
+
+    def start(self):
+        print("Simulated launcher started")
+
+    def stop(self):
+        print("Simulated launcher stopped")
+
+    def fire(self):
+        print("Simulated firing")
+
+    def move(self, command, duration):
+        print(f"Simulating move with command {command} for duration {duration}")
+
+    def close(self):
+        print("Simulated launcher closed")
+
+
+class Launcher(AbstractLauncher):
     def __init__(self):
         dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
 

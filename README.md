@@ -75,7 +75,7 @@ To use `main.py`:
 
 This script will utilize the camera to detect and track faces, and control the T-Shirt launcher based on the tracked positions.
 
-### Running `tracker.py` Face Recognition Functionality Standalone
+### Running Face Recognition Functionality Standalone
 
 If you do not have the USB micro T-Shirt launcher available or you want to test the facial recognition on a different machine, you can do so.
 
@@ -84,14 +84,14 @@ For debugging and testing the camera based facial recognition system:
 #### Setup
 
 - Ensure that the images used for face recognition (`shiva_face.jpg`, `adil_face.jpg`, or similar) are in the project directory.
-- Verify that `tracker.py` is configured with the correct paths to these images.
+- Verify that `main.py` is configured with the correct paths to these images.
 
 #### Running the Script
 
 - Activate the Poetry virtual environment and run the facial recognition system:
 
   ```bash
-  poetry run python tracker.py
+  poetry run python main.py --simulate
   ```
 
 Press `q` on the Video Window to quit.

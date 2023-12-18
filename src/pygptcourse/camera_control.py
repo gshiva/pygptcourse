@@ -1,6 +1,37 @@
 import time
 
-from pygptcourse.tshirt_launcher import DOWN, LEFT, RIGHT, STOP, UP, Launcher
+from pygptcourse.tshirt_launcher import (
+    DOWN,
+    LEFT,
+    RIGHT,
+    STOP,
+    UP,
+    Launcher,
+    SimulatedLauncher,
+)
+
+
+def print_attributes_and_methods(obj):
+    # Use dir() to get a list of all names (attributes and methods)
+    all_names = dir(obj)
+
+    # Filter attributes (excluding methods)
+    attributes = [name for name in all_names if not callable(getattr(obj, name))]
+
+    # Filter methods
+    methods = [name for name in all_names if callable(getattr(obj, name))]
+
+    # Print attributes and their definitions
+    print("Attributes:")
+    for attr in attributes:
+        value = getattr(obj, attr)
+        print(f"Attribute: {attr}, Definition: {value}")
+
+    # Print methods and their definitions
+    print("\nMethods:")
+    for method_name in methods:
+        method = getattr(obj, method_name)
+        print(f"Method: {method_name}, Definition: {method}")
 
 
 class CameraControl:
@@ -14,17 +45,13 @@ class CameraControl:
 
     def __init__(self, simulation_mode=False):
         self.simulation_mode = simulation_mode
-        self.launcher = Launcher() if not simulation_mode else None
+        self.launcher = Launcher() if not simulation_mode else SimulatedLauncher()
+        print_attributes_and_methods(self.launcher)
         self.current_camera_position = [self.TOTAL_TIME_LR, self.TOTAL_TIME_TB]
-        if not simulation_mode:
-            self.launcher.start()
-            self.move_camera_to_center()
+        self.launcher.start()
+        self.move_camera_to_center()
 
     def move_camera(self, direction, duration):
-        if self.simulation_mode:
-            print(f"Simulated camera movement {direction} for {duration} seconds.")
-            return
-
         cmd = STOP
         prev_current_camera_position = self.current_camera_position.copy()
         print(f"Previous camera position: {prev_current_camera_position}")
@@ -109,20 +136,11 @@ class CameraControl:
     def launch_if_aligned(self, face_center):
         moving = self.check_and_move_camera(face_center)
         if not moving:
-            if self.simulation_mode:
-                print("Simulated T-Shirt Launch .")
-            else:
-                print(
-                    f"Launching T-Shirt at target. T-Shirts launched: {self.launch_count}"
-                )
-                self.launcher.fire()
+            self.launcher.fire()
             self.launch_count += 1
         else:
             print("Target not aligned. Holding launch.")
 
     def stop(self):
-        if self.simulation_mode:
-            print("Simulated launcher stopped.")
-            return
         self.launcher.running = False
         self.launcher.close()
