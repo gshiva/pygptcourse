@@ -37,7 +37,7 @@ The ability to develop, test and debug the launcher and facial recognition funct
    ```
 
    1. Windows:
-   Most likely you will run into `No backend available` errors.
+      Most likely you will run into `No backend available` errors.
 
    ```bash
       raise NoBackendError('No backend available')
@@ -47,7 +47,7 @@ The ability to develop, test and debug the launcher and facial recognition funct
    Follow the instructions in [AdaFruit's instruction for fixing `no backend error`](https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/windows#test-pyusb-and-pyftdi-3041697). It involves downloading [libusb](https://sourceforge.net/projects/libusb/) and copying it to `C:\Windows\System32\` directory.
 
    1. Mac:
-   Most likely you will run into `No backend available` errors.
+      Most likely you will run into `No backend available` errors.
 
    Follow the instructions in [stack overflow article](https://stackoverflow.com/questions/70729330/python-on-m1-mbp-trying-to-connect-to-usb-devices-nobackenderror-no-backend-a) and run the following.
 
@@ -201,12 +201,6 @@ Once the testing was complete, it was easier to copy/paste code rather than a mo
 It was supposed to be a temporary solution.
 Life intervenes and is present for months now. Repackaging the accidental tech-debt as intentional, this would be a scenario very common in software where the 'temporary' solution becomes 'permanent'.
 More fixes are done to now 'permanent' solution 'just for this release' resulting in spaghetti code that nobody wants to touch. In the next iterations we will see how ChatGPT can help in refactoring code safely.
-
-#### Code Duplication Rationale
-
-- `main.py` includes sections of code copied from `tracker.py`. This was initially for quick integration, allowing `main.py` to handle face tracking along with the T-Shirt launcher control.
-- This also highlights tech debt problem that teams run into when implementing code under tight deadlines. Duplicated code makes it very hard to keep the different versions in `tracker.py` and `main.py` in sync. Testing is harder and so is bug fixing.
-- This approach established a working system, with plans to refactor and optimize in subsequent phases.
 
 ## Credits
 
