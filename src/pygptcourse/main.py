@@ -2,9 +2,16 @@ import argparse
 
 import cv2
 
+# isort: off
+
 from pygptcourse.camera_control import CameraControl
 from pygptcourse.camera_manager import CameraManager
 from pygptcourse.face_detector import FaceDetector
+
+# isort: on
+
+# the above is required because the local isort adds a new line while default GHA (Github Actions)
+# adds a new line
 
 parser = argparse.ArgumentParser(description="Run the camera control system.")
 parser.add_argument("--simulate", action="store_true", help="Run in simulation mode.")
