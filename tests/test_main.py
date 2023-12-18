@@ -1,9 +1,13 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+# isort: off
+
 from PIL import Image  # type: ignore
 
 from pygptcourse.main import main  # type: ignore
+
+# isort: on
 
 
 class TestMain(unittest.TestCase):
