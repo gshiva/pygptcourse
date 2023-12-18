@@ -2,13 +2,15 @@ import face_recognition  # type: ignore
 
 
 class FaceDetector:
-    def __init__(self, face_images):
+    def __init__(self, face_images, image_loader):
+        self.image_loader = image_loader
         self.face_encodings = self.load_and_encode_faces(face_images)
 
     def load_and_encode_faces(self, face_images):
         encodings = {}
         for name, image_path in face_images.items():
-            image = face_recognition.load_image_file(image_path)
+            full_image_path = self.image_loader.get_full_image_path(image_path)
+            image = face_recognition.load_image_file(full_image_path)
             encodings[name] = face_recognition.face_encodings(image)[0]
         return encodings
 
