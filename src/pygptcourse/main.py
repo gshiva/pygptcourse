@@ -21,7 +21,9 @@ def main():
     parser.add_argument(
         "--simulate", action="store_true", help="Run in simulation mode."
     )
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
+
+    print(f"Warning: {unknown} arguments passed")
 
     # Retrieve environment variable or default to current working directory (CWD)
     image_dir = os.environ.get("FACE_IMAGE_DIR", os.getcwd())
