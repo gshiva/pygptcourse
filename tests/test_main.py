@@ -11,7 +11,7 @@ from pygptcourse.main import main  # type: ignore
 class TestMain(unittest.TestCase):
     @patch("os.environ.get", return_value=None)
     @patch(
-        "main.FaceDetector.load_and_encode_faces",
+        "pygptcourse.main.FaceDetector.load_and_encode_faces",
         return_value={"Shiva": "mock_encoding", "Adil": "mock_encoding"},
     )
     @patch("pygptcourse.camera_control.Launcher")
