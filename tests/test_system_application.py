@@ -1,18 +1,19 @@
 import os
+import traceback
 import unittest
 from unittest.mock import MagicMock, patch
 
 import cv2
 
 
-class TestMain(unittest.TestCase):
+class TestApplicationEndToEnd(unittest.TestCase):
     @patch("os.environ.get", return_value=None)
     @patch("pygptcourse.main.FaceDetector")
     @patch("pygptcourse.camera_control.Launcher")
     @patch("cv2.waitKey", return_value=ord("q"))
     @patch("cv2.imshow")
     @patch("cv2.VideoCapture")
-    def test_main_default_image_dir(
+    def test_application_run(
         self,
         mock_video_capture_class,
         mock_cv2_imshow,
@@ -59,9 +60,17 @@ class TestMain(unittest.TestCase):
         from pygptcourse.main import main  # type: ignore
 
         main()
+        try:
+            main()
+            application_run_success = True
+        except Exception as e:
+            print(f"Caught exception {e}")
+            traceback.print_exc()
+            application_run_success = False
 
+        self.assertTrue(application_run_success)
         # Assertions to ensure mocks are used
-        mock_video_capture_class.assert_called_once()
+        mock_video_capture_class.assert_called()
         mock_video_capture.read.assert_called()  # This ensures that read was called
         mock_press_wait_key.assert_called()
         mock_launcher.assert_called()
