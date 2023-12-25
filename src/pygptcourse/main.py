@@ -1,5 +1,6 @@
 import argparse
 import os
+import traceback
 
 import cv2
 
@@ -129,6 +130,7 @@ def main():
                 break
     except Exception as e:
         print(f"Caught exception {e}")
+        traceback.print_exc()
     finally:
         camera_manager.stop()
         camera_control.stop()
