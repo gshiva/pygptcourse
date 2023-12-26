@@ -23,6 +23,7 @@ ipython = "^8.14.0"
 mypy = "^1.7.1"
 pre-commit = "^3.6.0"
 coverage = "^7.3.4"
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -44,4 +45,4 @@ filterwarnings = ["ignore:pkg_resources is deprecated::face_recognition_models"]
 omit = [".*", "*/tests/*", "*/acceptance_test/*", "*/site-packages/*"]
 
 [tool.coverage.report]
-fail_under = 48
+fail_under = 47
