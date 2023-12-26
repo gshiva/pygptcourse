@@ -373,6 +373,37 @@ test_cases = [
 - Validation: After editing, ensure the script still runs without syntax errors. This might include checking for missing commas, brackets, or quotation marks.
 - Documentation: Document any changes made to the test cases via commit messages, including why a test was added or removed, to maintain a clear history of the test suite evolution.
 
+### Security Measures for Self-Hosted Runners
+
+Our project uses self-hosted runners for GitHub Actions to provide a customized and efficient CI/CD pipeline. However, self-hosted runners can introduce security risks, especially when used with public repositories. To mitigate these risks and ensure the security of our infrastructure, we have implemented several security measures and configurations as recommended by GitHub's documentation.
+
+#### 1. Restricting Runner to Private Repositories
+
+As per [GitHub's recommendation](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners), we use self-hosted runners exclusively with private repositories. This precaution is critical because forks of public repositories can potentially execute dangerous code on our runner machine by creating a pull request that includes malicious code.
+
+#### 2. Hardening Self-Hosted Runners
+
+Following the [security hardening guidelines for self-hosted runners](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#hardening-for-self-hosted-runners), we have implemented several best practices, including:
+
+- **Isolating Runners**: Ensuring the runner is isolated from sensitive host system resources and other networks.
+- **Regular Updates**: Keeping the runner and its host system regularly updated with the latest security patches.
+- **Access Control**: Strictly controlling access to the self-hosted runner and its host system.
+
+#### 3. Repository Configuration
+
+To further enhance security, we've configured the repository to restrict which actions can run on our self-hosted runners and who can approve these runs. As outlined in the [managing GitHub Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests), we have:
+
+- **Limited Workflow Runs**: Configured the repository to prevent GitHub Actions from creating or approving pull requests unless they are from trusted users.
+- **Scoped Permissions**: Ensured that the self-hosted runners are used only by this repository and will not run any workflow that is outside of this repo. See ![Changed GitHub Actions repository permissions](docs/images/secure_githubworkflows_for_self_hosted_runners.png).
+
+#### 4. Monitoring and Auditing
+
+Continuous monitoring and periodic auditing are vital to maintaining the security of our CI/CD pipeline. Our team regularly checks the logs and monitors the activity of our self-hosted runners to detect and respond to any unusual or unauthorized activity promptly.
+
+### Self-Hosted Runners Security Concerns Conclusion
+
+By implementing these security measures, we aim to maintain a robust and secure CI/CD pipeline using self-hosted runners while minimizing the risk to our infrastructure and sensitive data. We continuously evaluate and update our security practices to adhere to the latest recommendations and best practices.
+
 ## Credits
 
 This code is based on the original source available at [https://github.com/hovren/pymissile](https://github.com/hovren/pymissile).
