@@ -192,15 +192,172 @@ To debug `tracker.py` using Visual Studio Code:
 - Click on "Start Debugging" (or press F5) to start the script with the debugger attached.
 - The execution will pause when it hits the breakpoint, allowing you to inspect variables and step through the code.
 
-### Code Duplication between `main.py` and `tracker.py`
+### Running Automated Tests
 
-In this version of the code, an astute reader may notice code duplication between `main.py` and `tracker.py`.
-The face tracking code and `move_camera` function code is copy/pasted from `tracker.py` to `main.py`. It was done both by accident and intention.
-The initial implementation of tracker.py was focused on developing the OpenCV functionality on a machine that did not have the USB device attached.
-Once the testing was complete, it was easier to copy/paste code rather than a modular integration.
-It was supposed to be a temporary solution.
-Life intervenes and is present for months now. Repackaging the accidental tech-debt as intentional, this would be a scenario very common in software where the 'temporary' solution becomes 'permanent'.
-More fixes are done to now 'permanent' solution 'just for this release' resulting in spaghetti code that nobody wants to touch. In the next iterations we will see how ChatGPT can help in refactoring code safely.
+#### Overview
+
+Automated tests are essential for ensuring the quality and reliability of our application. They cover unit tests, integration tests, and system tests, each designed to validate different aspects of the system. Follow the instructions below to run these tests.
+
+#### Prerequisites
+
+- Ensure poetry is installed and properly set up on your system.
+
+#### Running the Tests
+
+1. **Navigate to the Project Root:**
+   Open a terminal and navigate to the root directory of the project.
+
+2. **Run the test:**
+
+   ```shell
+   poetry run pytest
+   ```
+
+   Alternatively, if the tests are categorized or you want to run a specific set, you can specify the path:
+
+After running the tests, observe the output in the terminal for the results, including passed, failed, and possibly skipped tests.
+For detailed results, most test runners offer options to generate reports in various formats.
+
+Run a Specific Test:
+Use pytest to run a specific test file or even a single test case within a file. Here's the general structure:
+
+```shell
+poetry run pytest tests/path/to/test_file.py::test_class_name::test_function_name
+```
+
+Replace `path/to/test_file.py` with the relative path to the test file you want to run.
+Replace the `test_class_name` with the specific test class name you want to run.
+Replace `test_function_name` with the specific test function you want to execute. If you want to run all tests in a file, just omit ``::test_function_name`.
+
+For example, to run a test named `test_load_and_encode_faces` under the class `TestFaceDetector` in a file located at `tests/test_unit_face_detector.py`, you would use:
+
+```shell
+poetry run pytest tests/test_unit_face_detector.py::TestFaceDetector::test_load_and_encode_faces
+```
+
+### Running Acceptance Tests
+
+#### Acceptance Tests Overview
+
+`acceptance_test_runner.py` script is part of our quality assurance process. This script facilitates manual acceptance testing by guiding users through predefined test cases, ensuring that our application meets all requirements and works as expected in real-world scenarios when installed at the customer site.
+
+#### Features of the Acceptance Test Runner
+
+- **Input Validation:** Ensures that test results are accurately recorded by accepting only specific inputs ('p', 'P', 'pass', 'Pass', 'PASS' for passing and similar variations for failing).
+- **CSV Output:** Results are logged into a CSV file, `acceptance_tests_TIMESTAMP.csv`, making it easy to review and parse test outcomes.
+- **Checksum for Integrity:** A SHA256 checksum is generated for the CSV log and saved in a separate file, `acceptance_tests_checksum_TIMESTAMP.txt`, ensuring the integrity of the test results.
+- **Unique Timestamps:** Each test session's results are stored in uniquely named files, preventing overwriting and making each test run distinguishable.
+
+#### Running the Acceptance Tests
+
+1. **Activate the Virtual Environment:**
+   Ensure Poetry's virtual environment is activated to access all dependencies:
+
+   ```shell
+   poetry shell
+   ```
+
+   **Execute the Script:**
+
+   Navigate to the acceptance_test directory and run:
+
+   ```shell
+   python acceptance_test_runner.py
+   ```
+
+### Adding or Modifying Test Cases
+
+To maintain and update the acceptance tests as your application evolves, you can directly modify the `test_cases` list in the `acceptance_test_runner.py` script. Here's how:
+
+#### Editing the `test_cases` List:
+
+1. **Find the `test_cases` List:**
+   Open the `acceptance_test_runner.py` script and locate the `test_cases` list. It starts with an opening square bracket `[` and ends with a closing square bracket `]`.
+
+1. **Adding a New Test Case:**
+   Directly add a new dictionary to the `test_cases` list for each new test case. Ensure each dictionary contains the 'name', 'instructions', and 'expected_result' keys.
+
+   **From:**
+
+   ```python
+   test_cases = [
+      {
+        "name": "Face Detection Accuracy",
+        "instructions": (
+            "Present various images to the system with different lighting, "
+            "distances, and orientations. Verify the system accurately detects "
+            "faces in each image."
+        ),
+        "expected_result": (
+            "The system should detect faces in at least 95% of the cases across "
+            "all conditions."
+        ),
+      },
+   ]
+   ```
+
+**To:**
+
+```python
+test_cases = [
+      {
+        "name": "Face Detection Accuracy",
+        "instructions": (
+            "Present various images to the system with different lighting, "
+            "distances, and orientations. Verify the system accurately detects "
+            "faces in each image."
+        ),
+        "expected_result": (
+            "The system should detect faces in at least 95% of the cases across "
+            "all conditions."
+        ),
+      },
+      {
+      "name": "New Test Case",
+      "instructions": "Instructions for the new test case.",
+      "expected_result": "Expected outcome or behavior for the new test case."
+      },
+      # Add more test cases as needed
+]
+```
+
+**Note:**
+
+For `flake8` to pass ensure that each line is less than `120` characters. You can do that by enclosing your string using `(` and `)`.
+
+1. **Removing an Existing Test Case:**
+
+To remove a test case, simply delete the entire dictionary entry for that test case from the test_cases list.
+
+Before Deletion:
+
+```python
+test_cases = [
+{ ... }, # Some test case
+{
+"name": "Obsolete Test Case",
+"instructions": "Old instructions.",
+"expected_result": "Old expected result."
+},
+{ ... } # Other test cases
+]
+```
+
+After Deletion:
+
+```python
+test_cases = [
+{ ... }, # Some test case
+# The obsolete test case has been removed
+{ ... } # Other test cases
+]
+```
+
+**Best Practices:**
+
+- Clear and Descriptive: Make sure each test case is clearly described with explicit instructions and expected results.
+- Validation: After editing, ensure the script still runs without syntax errors. This might include checking for missing commas, brackets, or quotation marks.
+- Documentation: Document any changes made to the test cases via commit messages, including why a test was added or removed, to maintain a clear history of the test suite evolution.
 
 ## Credits
 
@@ -209,3 +366,4 @@ This code is based on the original source available at [https://github.com/hovre
 ## License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
+````

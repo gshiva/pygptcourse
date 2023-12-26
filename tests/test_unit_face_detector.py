@@ -4,7 +4,11 @@ from unittest.mock import MagicMock
 
 import cv2
 
+# isort: off
+
 from pygptcourse.face_detector import FaceDetector  # type: ignore
+
+# isort: on
 
 
 class TestFaceDetector(unittest.TestCase):
