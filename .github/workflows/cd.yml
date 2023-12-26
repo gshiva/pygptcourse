@@ -23,11 +23,11 @@ jobs:
         run: pipx install poetry
 
       - name: Install dependencies
-        run: poetry install
+        run: /root/.local/bin/poetry install
         working-directory: ${{ env.APP_DIR }}
 
       - name: Run tests
-        run: poetry run pytest
+        run: /root/.local/bin/poetry run pytest
         working-directory: ${{ env.APP_DIR }}
 
       - name: Update Systemd Service
@@ -41,7 +41,7 @@ jobs:
           Type=simple
           # Omitted the User line so it defaults to running as root
           WorkingDirectory=${{ github.workspace }}
-          ExecStart=poetry run python ${{ github.workspace }}/src/pygptcourse/main.py
+          ExecStart=/root/.local/bin/poetry run python ${{ github.workspace }}/src/pygptcourse/main.py
           Restart=on-failure
 
           [Install]
