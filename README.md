@@ -269,7 +269,7 @@ poetry run pytest tests/test_unit_face_detector.py::TestFaceDetector::test_load_
 
 To maintain and update the acceptance tests as your application evolves, you can directly modify the `test_cases` list in the `acceptance_test_runner.py` script. Here's how:
 
-#### Editing the `test_cases` List:
+#### Editing the `test_cases` List
 
 1. **Find the `test_cases` List:**
    Open the `acceptance_test_runner.py` script and locate the `test_cases` list. It starts with an opening square bracket `[` and ends with a closing square bracket `]`.
@@ -366,4 +366,3 @@ This code is based on the original source available at [https://github.com/hovre
 ## License
 
 This project is licensed under the [Apache License 2.0](LICENSE).
-````
