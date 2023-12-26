@@ -11,3 +11,11 @@ https://docs.github.com/en/actions/managing-workflow-runs/approving-workflow-run
 
 With these the self-hosted runner at RPi
 can be added.
+
+Note: To push this commit use the answer shown in
+
+https://stackoverflow.com/questions/18268986/git-how-to-push-messages-added-by-git-notes-to-the-central-git-server
+
+git push origin 'refs/notes/*'
+
+On the 'other' repo, regular `git pull --rebase` works
