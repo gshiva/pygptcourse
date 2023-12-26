@@ -36,6 +36,18 @@ The ability to develop, test and debug the launcher and facial recognition funct
    poetry install
    ```
 
+   1. Raspberry Pi:
+      Most likely you will run into `KeyRing` errors when installing over ssh on raspberry pi.
+
+      To get around it:
+
+      ```shell
+      export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+      poetry install
+      ```
+
+      should work. See [github issue](https://github.com/python-poetry/poetry/issues/1917) for further details.
+
    1. Windows:
       Most likely you will run into `No backend available` errors.
 
