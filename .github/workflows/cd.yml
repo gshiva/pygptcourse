@@ -4,14 +4,9 @@ on: [workflow_dispatch]
 jobs:
   build-test-deploy:
     runs-on: self-hosted # Assumes label matches your Raspberry Pi runner
-    env:
-      HOME_DIR: /home/ghacd
-      APP_DIR: /home/ghacd/pygptcourse # App directory
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-        with:
-          path: ${{ env.APP_DIR }} # Directly checking out to the specific directory
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -41,9 +36,9 @@ jobs:
 
           [Service]
           Type=simple
-          User=pi
-          WorkingDirectory=${{ env.APP_DIR }}
-          ExecStart=poetry run python ${{ env.APP_DIR }}/src/pygptcourse/main.py
+          # Omitted the User line so it defaults to running as root
+          WorkingDirectory=${{ github.workspace }}
+          ExecStart=poetry run python ${{ github.workspace }}/src/pygptcourse/main.py
           Restart=on-failure
 
           [Install]
