@@ -1,0 +1,13 @@
+This commit along with github repository level
+Actions setting enables some security for
+self-hosted runners.
+
+https://github.com/gshiva/pygptcourse/settings/actions
+
+This addresses along with PR approval required for
+workflow runs, the security issue listed here:
+
+https://docs.github.com/en/actions/managing-workflow-runs/approving-workflow-runs-from-public-forks
+
+With these the self-hosted runner at RPi
+can be added.
