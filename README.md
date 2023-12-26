@@ -1,5 +1,7 @@
 # pygptcourse
 
+[![test](https://github.com/gshiva/pygptcourse/actions/workflows/ci.yml/badge.svg)](https://github.com/gshiva/pygptcourse/actions/workflows/ci.yml)
+
 Face detection, tracking using USB micro T-Shirt launcher and RaspberryPi camera module to demonstrate how ChatGPT can speed up development and writing clean and SOLID code.
 
 ## Documentation generated for T-Shirt Launcher Project by ChatGPT
