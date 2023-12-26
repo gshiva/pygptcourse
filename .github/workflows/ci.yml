@@ -50,4 +50,12 @@ jobs:
       #    run test suite and output coverage file
       #----------------------------------------------
       - name: Test with pytest
-        run: poetry run pytest --cov=${{ github.workspace }} --cov-report=xml
+        run: poetry run pytest --cov=${{ github.workspace }} --cov-report=html
+      #----------------------------------------------
+      #    Upload coverage to GitHub Artifacts
+      #----------------------------------------------
+      - name: Upload coverage to GitHub Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: htmlcov/
