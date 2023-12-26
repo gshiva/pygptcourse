@@ -46,7 +46,7 @@ The ability to develop, test and debug the launcher and facial recognition funct
       poetry install
       ```
 
-      should work. See [github issue](https://github.com/python-poetry/poetry/issues/1917) for further details.
+      should work. See [GitHub issue](https://github.com/python-poetry/poetry/issues/1917) for further details.
 
    1. Windows:
       Most likely you will run into `No backend available` errors.
