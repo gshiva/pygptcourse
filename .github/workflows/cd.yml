@@ -1,0 +1,53 @@
+name: T-Shirt Launcher Deployment
+on: [workflow_dispatch]
+
+jobs:
+  build-test-deploy:
+    runs-on: self-hosted  # Assumes label matches your Raspberry Pi runner
+    env:
+        HOME_DIR: /home/ghacd
+        APP_DIR: /home/ghacd/pygptcourse  # App directory
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+      with:
+        path: ${{ env.APP_DIR }}  # Directly checking out to the specific directory
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install Pipx
+      run: pip install pipx
+
+    - name: Install Poetry
+      run: pipx install poetry
+
+    - name: Install dependencies
+      run: poetry install
+      working-directory: ${{ env.APP_DIR }}
+
+    - name: Run tests
+      run: poetry run pytest
+      working-directory: ${{ env.APP_DIR }}
+
+    - name: Update Systemd Service
+      if: success()
+      run: |
+        echo "[Unit]
+        Description=My Python Application
+        After=network.target
+
+        [Service]
+        Type=simple
+        User=pi
+        WorkingDirectory=${{ env.APP_DIR }}
+        ExecStart=poetry run python ${{ env.APP_DIR }}/src/pygptcourse/main.py
+        Restart=on-failure
+
+        [Install]
+        WantedBy=multi-user.target" | sudo tee /etc/systemd/system/pygptcourse.service
+
+        sudo systemctl daemon-reload
+        sudo systemctl restart pygptcourse.service
