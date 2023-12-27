@@ -404,6 +404,29 @@ The workflow is structured into several key steps, each responsible for a part o
 #### Usage and Execution
 
 - **Pre-Requisites**
+  - Installing PowerShell Core on Windows
+
+      1. Overview
+
+         PowerShell Core (`pwsh`) is a cross-platform automation tool and shell developed by Microsoft. It's required for running certain scripts and tasks in our projects, including the `cd.yml` GitHub Actions workflow. Below are the instructions for installing PowerShell Core on Windows systems.
+
+      1. Installation Methods
+
+         You have several options for installing PowerShell Core on Windows:
+
+         1. Using the Official Installer (Recommended)
+
+               - **Download**: Go to the [PowerShell GitHub releases page](https://github.com/PowerShell/PowerShell/releases) and download the latest stable `.msi` file for Windows.
+               - **Install**: Run the downloaded installer and follow the prompts to complete the installation.
+
+         1. Via Windows Package Manager (winget)
+
+            - **Command**: Open a command prompt or PowerShell window and run:
+
+            ```shell
+            winget install --id Microsoft.Powershell --source winget
+            ```
+
   - Ensure Python and `pip` are installed on your runners.
   - Your self-hosted runners should have appropriate permissions for global installations and service management.
 - **Triggering the Workflow**

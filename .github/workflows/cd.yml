@@ -19,6 +19,7 @@ jobs:
         shell: pwsh
         run: |
           $version = python --version
+          Write-Output "Found Python version: $version"
           if ($version -notcontains "Python 3.9") { throw "Python 3.9 or higher is required" }
 
       - name: Install Poetry
