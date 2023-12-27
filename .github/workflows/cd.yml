@@ -18,10 +18,12 @@ jobs:
       - name: Verify Python version
         shell: pwsh
         run: |
-          $version = python --version
-          Write-Output "Found Python version: $version"
-          if ($version -notcontains "Python 3.9") { throw "Python 3.9 or higher is required" }
-
+          $versionString = python --version
+          Write-Output "Found Python version: $versionString"
+          $version = [System.Version]($versionString -replace '^Python\s', '')
+          if ($version -lt [System.Version]"3.9") {
+            throw "Expected Python 3.9 or higher, but found $versionString"
+          }
       - name: Install Poetry
         run: pip install poetry=1.7.0
 
