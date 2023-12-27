@@ -1,4 +1,3 @@
-
 name: T-Shirt Launcher Deployment
 on: [workflow_dispatch]
 
@@ -17,7 +16,10 @@ jobs:
           sudo apt-get install -y powershell ninja-build
 
       - name: Verify Python version
-        run: python --version && python -c "import sys; assert sys.version_info >= (3, 9), 'Python 3.9 or higher is required'"
+        shell: pwsh
+        run: |
+          $version = python --version
+          if ($version -notcontains "Python 3.9") { throw "Python 3.9 or higher is required" }
 
       - name: Install Poetry
         run: pip install poetry=1.7.0
