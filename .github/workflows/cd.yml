@@ -58,5 +58,24 @@ jobs:
       - name: Setup Windows Service (Windows Only)
         if: runner.os == 'Windows' && success()
         run: |
-          New-Service -Name "pygptcourse" -BinaryPathName "poetry run python ${{ github.workspace }}/src/pygptcourse/main.py"
+          $ServiceName = "PyGPTCourseService"
+          $WorkingDir = "${{ github.workspace }}"
+          $AppPath = "src\pygptcourse\main.py"
+          $PoetryPath = "poetry.exe"
+          $ServiceCommand = "powershell.exe -Command `"cd $WorkingDir; & $PoetryPath run python $AppPath`""
+
+          # Check if the service exists and delete it if so
+          $service = Get-Service -Name $ServiceName -ErrorAction SilentlyContinue
+          if ($service) {
+            Write-Output "Service $ServiceName exists. Deleting..."
+            sc.exe delete $ServiceName
+            # Optional: Wait for the service to be fully deleted
+            while (Get-Service -Name $ServiceName -ErrorAction SilentlyContinue) {
+              Start-Sleep -Seconds 2
+            }
+          }
+
+          # Create the service using sc.exe
+          sc.exe create $ServiceName binPath= $ServiceCommand start= auto
+          sc.exe start $ServiceName
         shell: pwsh
