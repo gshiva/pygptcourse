@@ -1,37 +1,35 @@
+
 name: T-Shirt Launcher Deployment
 on: [workflow_dispatch]
 
 jobs:
   build-test-deploy:
-    runs-on: self-hosted # Assumes label matches your Raspberry Pi runner
+    runs-on: self-hosted # Assumes label matches your runner
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Verify Python version
+      - name: Install dependencies (Linux Only)
+        if: runner.os == 'Linux'
         run: |
-          python3 --version
-          if ! python3 -c 'import sys; assert sys.version_info >= (3, 9), "Python 3.9 or higher is required"'; then
-            echo "Python 3.9 or higher is not installed"
-            exit 1
-          fi
+          sudo apt-get update
+          sudo apt-get install -y powershell ninja-build
+        shell: bash
 
-      - name: Install Ninja Build System
-        run: sudo apt-get update && sudo apt-get install -y ninja-build
-
-      - name: Install Pipx
-        run: pip install pipx
+      - name: Verify Python version
+        run: python --version && python -c "import sys; assert sys.version_info >= (3, 9), 'Python 3.9 or higher is required'"
+        shell: pwsh
 
       - name: Install Poetry
-        run: pipx install poetry
+        run: pip install poetry=1.7.0
 
       - name: Install dependencies
-        run: /root/.local/bin/poetry install
-        working-directory: ${{ env.APP_DIR }}
+        run: poetry install
+        working-directory: ${{ github.workspace }}
 
       - name: Run tests
-        run: /root/.local/bin/poetry run pytest
-        working-directory: ${{ env.APP_DIR }}
+        run: poetry run pytest
+        working-directory: ${{ github.workspace }}
 
       - name: Update Systemd Service
         if: success()
@@ -52,3 +50,9 @@ jobs:
 
           sudo systemctl daemon-reload
           sudo systemctl restart pygptcourse.service
+
+      - name: Setup Windows Service (Windows Only)
+        if: runner.os == 'Windows' && success()
+        run: |
+          New-Service -Name "pygptcourse" -BinaryPathName "poetry run python ${{ github.workspace }}/src/pygptcourse/main.py"
+        shell: pwsh

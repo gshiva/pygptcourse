@@ -208,7 +208,7 @@ To debug `tracker.py` using Visual Studio Code:
 
 ### Running Automated Tests
 
-#### Overview
+#### Automated Tests Overview
 
 Automated tests are essential for ensuring the quality and reliability of our application. They cover unit tests, integration tests, and system tests, each designed to validate different aspects of the system. Follow the instructions below to run these tests.
 
@@ -372,6 +372,55 @@ test_cases = [
 - Clear and Descriptive: Make sure each test case is clearly described with explicit instructions and expected results.
 - Validation: After editing, ensure the script still runs without syntax errors. This might include checking for missing commas, brackets, or quotation marks.
 - Documentation: Document any changes made to the test cases via commit messages, including why a test was added or removed, to maintain a clear history of the test suite evolution.
+
+## Continuous Deployment Workflow Update
+
+### Continuous Deployment Workflow (`cd.yml`) Overview
+
+#### Introduction to `cd.yml`
+
+The `cd.yml` file is a dedicated GitHub Actions workflow for continuous deployment (CD) of our Python-based projects. This workflow is designed to automate the deployment process, ensuring that every change pushed to our repository is smoothly and reliably deployed to our production environment or any other specified targets.
+
+#### Key Features
+
+- **Cross-Platform Compatibility**: Runs on both Linux and Windows runners, adapting the commands and environment based on the operating system.
+- **Python Version Verification**: Ensures that the specified version of Python is installed and available on the runner.
+- **Global Poetry Installation**: Uses `pip` to install Poetry globally, making it accessible to all users, including those running services.
+- **Conditional Service Management**:
+  - **Linux**: Configures and manages a `systemd` service for the application.
+  - **Windows**: Sets up a corresponding Windows service.
+
+#### Workflow Structure
+
+The workflow is structured into several key steps, each responsible for a part of the deployment process:
+
+1. **Setup**: Initializes the runner environment, checks out the code from the repository, and sets up Python.
+2. **Install Poetry**: Uses `pip` to install a specific version of Poetry globally. This ensures that our dependency management tool is consistently available across all environments and users.
+3. **Install Dependencies and Run Tests**: Installs the necessary dependencies using Poetry and runs any tests to verify the build's integrity.
+4. **Service Setup**:
+   - On Linux, it updates or creates a `systemd` service tailored to our application.
+   - On Windows, it sets up a service using native Windows commands, ensuring the application starts on boot and runs as expected.
+
+#### Usage and Execution
+
+- **Pre-Requisites**
+  - Ensure Python and `pip` are installed on your runners.
+  - Your self-hosted runners should have appropriate permissions for global installations and service management.
+- **Triggering the Workflow**
+  - The workflow is designed to be triggered on specific GitHub events, such as pushing to a branch or manually via workflow dispatch.
+- **Monitoring and Logs**
+  - Progress, logs, and outcomes can be monitored directly through the GitHub Actions tab, providing transparency and immediate feedback on the deployment process.
+
+#### Enhancements and Global Installation of Poetry
+
+With the latest enhancements, the `cd.yml` file now includes steps to install Poetry globally using `pip`. This approach was chosen to ensure that Poetry is readily available for any user on the system, including non-interactive service accounts, thus facilitating smoother deployments and service management.
+
+- **Global Accessibility**: Poetry is installed in a system-wide location, making it available to all users.
+- **Version Control**: The workflow specifies the exact version of Poetry to install, allowing for consistent behavior across different environments and runs.
+
+#### Future Work and Contributions
+
+The `cd.yml` is an evolving piece of our CI/CD pipeline. We welcome contributions, suggestions, and feedback to enhance its functionality and robustness. Whether it's adding more tests, refining the deployment strategy, or updating tooling versions, your input is valuable.
 
 ### Security Measures for Self-Hosted Runners
 
