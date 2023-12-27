@@ -78,7 +78,7 @@ jobs:
           # Create the service using sc.exe and start it within a try...catch block
           try {
             sc.exe create $ServiceName binPath= $ServiceCommand start= auto
-            sc.exe start $ServiceName
+            Start-Job -ScriptBlock { sc.exe start "PyGPTCourseService" } | Out-Null
           } catch {
             Write-Error "Failed to start the service: $_"
             Write-Error "Starting a PowerShell script on Windows is extraordinally hard."
