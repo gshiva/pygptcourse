@@ -2,7 +2,7 @@ import argparse
 import os
 import traceback
 
-import cv2
+import cv2  # type: ignore
 
 # isort: off
 
@@ -26,8 +26,10 @@ def main():
 
     print(f"Warning: {unknown} arguments passed")
 
-    # Retrieve environment variable or default to current working directory (CWD)
-    image_dir = os.environ.get("FACE_IMAGE_DIR", os.getcwd())
+    # Retrieve environment variable or default to where this script is located
+    image_dir = os.environ.get(
+        "FACE_IMAGE_DIR", os.path.dirname(os.path.abspath(__file__))
+    )
 
     # Initialize the image loader with the directory
     image_loader = FileSystemImageLoader(base_dir=image_dir)
