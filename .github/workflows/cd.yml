@@ -36,7 +36,7 @@ jobs:
         working-directory: ${{ github.workspace }}
 
       - name: Update Systemd Service
-        if: success()
+        if: runner.os == 'Linux' && success()
         run: |
           echo "[Unit]
           Description=My Python Application
