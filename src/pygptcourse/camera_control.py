@@ -45,10 +45,15 @@ class CameraControl:
 
     def __init__(self, simulation_mode=False):
         self.simulation_mode = simulation_mode
+        print("Starting initialization of Launcher")
         self.launcher = Launcher() if not simulation_mode else SimulatedLauncher()
+        print("Finished initialization of Launcher")
         self.current_camera_position = [self.TOTAL_TIME_LR, self.TOTAL_TIME_TB]
-        self.launcher.start()
-        self.move_camera_to_center()
+
+    def start(self):
+        if not self.launcher.running:
+            print("Starting launcher...")
+            self.launcher.start()
 
     def move_camera(self, direction, duration):
         cmd = STOP

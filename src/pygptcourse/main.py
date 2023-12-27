@@ -39,17 +39,21 @@ def main():
     face_detector = FaceDetector(face_images, image_loader)
 
     # Initialize CameraControl and CameraManager
+    print("Initializing CameraControl")
     camera_control = CameraControl(simulation_mode=args.simulate)
+    print("Initializing CameraManager")
     camera_manager = CameraManager()
 
     counter = 0
     face_names = []
 
-    camera_control.move_camera_to_center()
-
-    video_capture = camera_manager.start()
-
     try:
+        print("Moving launcher to the center")
+        camera_control.start()
+        camera_control.move_camera_to_center()
+
+        video_capture = camera_manager.start()
+
         while True:
             ret, image = video_capture.read()
 

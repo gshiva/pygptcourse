@@ -47,15 +47,18 @@ class AbstractLauncher(abc.ABC):
 
 class SimulatedLauncher(AbstractLauncher):
     def __init__(self):
+        self.running = False
         super().__init__()
 
     def send_command(self, command):
         print(f"Simulated sending command {command}")
 
     def start(self):
+        self.running = True
         print("Simulated launcher started")
 
     def stop(self):
+        self.running = False
         print("Simulated launcher stopped")
 
     def fire(self):
@@ -73,13 +76,15 @@ class Launcher(AbstractLauncher):
         dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
 
         if dev is None:
-            raise RuntimeError("Could not find USB device")
+            error_string = f"Could not find USB device with id vendor: {hex(VENDOR)} and id product: {hex(PRODUCT)}"
+            print(error_string)
+            raise RuntimeError(error_string)
 
         try:
             dev.detach_kernel_driver(0)
             print("Device unregistered")
-        except Exception:
-            print("Already unregistered")
+        except Exception as e:
+            print(f"Already unregistered, Exception: {e}")
 
         dev.reset()
         self.dev = dev
