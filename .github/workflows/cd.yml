@@ -75,7 +75,14 @@ jobs:
             }
           }
 
-          # Create the service using sc.exe
-          sc.exe create $ServiceName binPath= $ServiceCommand start= auto
-          sc.exe start $ServiceName
+          # Create the service using sc.exe and start it within a try...catch block
+          try {
+            sc.exe create $ServiceName binPath= $ServiceCommand start= auto
+            sc.exe start $ServiceName
+          } catch {
+            Write-Error "Failed to start the service: $_"
+            Write-Error "Starting a PowerShell script on Windows is extraordinally hard."
+            Write-Output "You can start the service manually going to Services->$ServiceName->Properties and copy the"
+            Write-Output "script it tries to launch. Paste it into Administrator PowerShell and the script should work."
+          }
         shell: pwsh
