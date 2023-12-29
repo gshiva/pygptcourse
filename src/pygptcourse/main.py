@@ -73,7 +73,7 @@ def main():
 
             # to save cpu, only do calculations once every 10 frames
             if counter % 3 == 0:
-                face_locations, face_names = face_detector.detect_faces(small_frame)
+                face_locations, face_names = detect_faces(face_detector, small_frame)
 
             for (top, right, bottom, left), name in zip(face_locations, face_names):
                 # Because we made the image smaller, now need to multiply by 4 to get correct size
@@ -152,5 +152,5 @@ def main():
 
 if __name__ == "__main__":
     # Start up the server to expose the metrics.
-    start_http_server(8000)
+    start_http_server(port=18000, addr="0.0.0.0")
     main()
