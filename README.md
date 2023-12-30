@@ -39,16 +39,82 @@ The ability to develop, test and debug the launcher and facial recognition funct
    ```
 
    1. Raspberry Pi:
-      Most likely you will run into `KeyRing` errors when installing over ssh on raspberry pi.
 
-      To get around it:
+      1. Pre-requisites:
+         For faster and reliable install, use [Raspberry Pi OS Bullseye](https://downloads.raspberrypi.com/raspios_oldstable_armhf/images/raspios_oldstable_armhf-2023-12-06/2023-12-05-raspios-bullseye-armhf.img.xz).
+         Binary wheels packages are available for `opencv-python` only for Bullseye currently. See [pi wheels/opencv-python wheel](https://www.piwheels.org/project/opencv-python/)
+         Install the pre-requisites:
 
-      ```shell
-      export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-      poetry install
-      ```
+         ```shell
+         sudo apt install -y libatlas-base-dev libhdf5-dev libopenblas-dev
+         ```
 
-      should work. See [GitHub issue](https://github.com/python-poetry/poetry/issues/1917) for further details.
+      1. Fix pyproject.toml manually:
+
+         Change the primary poetry packages source from `PyPI` to `piwheels`:
+
+         From:
+
+         ```toml
+         [[tool.poetry.source]]
+         name = "piwheels.org"
+         url = "https://www.piwheels.org/simple"
+         priority = "supplemental"
+
+         [[tool.poetry.source]]
+         name = "PyPI"
+         priority = "primary"
+         ```
+
+         To:
+
+         ```toml
+         [[tool.poetry.source]]
+         name = "piwheels.org"
+         url = "https://www.piwheels.org/simple"
+         priority = "primary"
+
+         [[tool.poetry.source]]
+         name = "PyPI"
+         priority = "supplemental"
+         ```
+
+         Delete the `poetry.lock` file
+
+         ```shell
+         rm poetry.lock
+         ```
+
+      1. Most likely you will run into `KeyRing` errors when installing over ssh on raspberry pi.
+
+         To get around it:
+
+         ```shell
+         export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+         poetry install
+         ```
+
+         should work. See [GitHub issue](https://github.com/python-poetry/poetry/issues/1917) for further details.
+
+      1. Install the pre-requisites: `sudo apt install -y libatlas-base-dev libhdf5-dev libopenblas-dev`
+
+      1. Enable legacy camera support: Using `sudo raspi-config` enable `Legacy Camera Support`. This mode is going to be
+         deprecated. See [use legacy](https://github.com/opencv/opencv/issues/22820). This mode is used in the code as it offers
+         the most portability across operating systems.
+
+         **Note**: If you have Raspberry Pi Camera Module v3 or later this won't work. To avoid this, we have to use `picamera2`
+         which uses `libcamera`. See [picamera2 examples](https://github.com/raspberrypi/picamera2/blob/main/examples/opencv_face_detect_3.py).
+
+      1. VNC or Desktop Display mode:
+
+         To see the program working you need to login to the Raspberry PI Desktop. These are the steps that I had to take
+         to make it work.
+
+         1. Install `sudo apt install xrdp`
+         1. Add a new user, `sudo adduser pygpt` and RDP using as the new user. `RDP` session should not show a black screen now.
+            (I have seen this problem before where the files needed for X window session are not created by default. When you do add a new user
+            after installing `xrdp` then the files get created and everything works like magic. ).
+            See [OMG - it saved me so much time](https://www.reddit.com/r/raspberry_pi/comments/qw1cdw/raspberry_pi_4_xrdp_windows_10_remote_desktop/).
 
    1. Windows:
       Most likely you will run into `No backend available` errors.
@@ -91,7 +157,6 @@ To use `main.py`:
    ```
 
 This script will utilize the camera to detect and track faces, and control the T-Shirt launcher based on the tracked positions.
-
 
 ### Headless Mode Operation
 
