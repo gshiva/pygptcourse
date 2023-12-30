@@ -39,22 +39,19 @@
 			"version": "latest"
 		}
 	},
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [18000],
-
+	"forwardPorts": [
+		18000
+	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "poetry install && sudo sh -c 'apt-get update && apt-get install ffmpeg libsm6 libxext6  -y'",
 	"runArgs": [
 		"--device=/dev/video0:/dev/video0"
 	],
-
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	"remoteUser": "root"
 }
