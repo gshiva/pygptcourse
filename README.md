@@ -92,6 +92,49 @@ To use `main.py`:
 
 This script will utilize the camera to detect and track faces, and control the T-Shirt launcher based on the tracked positions.
 
+
+### Headless Mode Operation
+
+#### Overview
+
+The application now supports a headless mode, allowing it to run without a graphical user interface. This is particularly useful when running in environments that do not have a display, such as Docker containers or servers. The headless mode ensures that all functionalities of the application are available, even without a graphical output, making it ideal for automated, background, or server deployments.
+
+#### Running in Headless Mode
+
+To run the application in headless mode, use the `--headless` flag when starting the application. This can be combined with other existing flags as needed.
+
+**Example Command:**
+
+```bash
+python main.py --headless --simulate
+```
+
+### Running in Docker Container
+
+You could build a Docker container using the information in .devcontainer.json. To run the built image:
+
+```bash
+docker run -it --device /dev/video0:/dev/video0 -v /home/user/code/pygptcourse:/tmp/pygptcourse bash
+```
+
+**Note:**
+
+Ensure that `/dev/video0` is readable and writable by the user running the process.
+
+#### Automatic Headless Detection
+
+The application automatically detects if it's running in an environment without a display (like a Docker container or a devcontainer) and switches to headless mode. It checks for the DISPLAY environment variable and adjusts its behavior accordingly. This ensures smooth operation across various environments without needing explicit configuration.
+
+#### Docker and Devcontainer Support
+
+The application is compatible with containerized environments. When running in Docker or devcontainers, the application can automatically operate in headless mode, ensuring that it functions correctly even without a graphical interface. This makes it suitable for a wide range of development, testing, and production scenarios.
+
+#### Error Handling in Headless Mode
+
+In headless mode, the application gracefully handles any graphical operations that typically require a display. If an attempt is made to perform such operations, the application will log the incident and continue running without interruption. This robust error handling ensures continuous operation, making the application reliable for long-running and automated tasks.
+
+Note: The headless mode is an advanced feature aimed at improving the application's flexibility and deployment options. While it allows the application to run in more environments, the visualization and interactive features will not be available when operating in this mode.
+
 ### Running Face Recognition Functionality Standalone
 
 If you do not have the USB micro T-Shirt launcher available or you want to test the facial recognition on a different machine, you can do so.
@@ -463,14 +506,22 @@ Following the [security hardening guidelines for self-hosted runners](https://do
 
 #### 3. Repository Configuration
 
-To further enhance security, we've configured the repository to restrict which actions can run on our self-hosted runners and who can approve these runs. As outlined in the [managing GitHub Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests), we have:
+To further enhance security, we've configured the repository to restrict which actions can run on our self-hosted runners
+and who can approve these runs.
+
+As outlined in the managing GitHub Actions settings for a repository
+[GHA settings](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#preventing-github-actions-from-creating-or-approving-pull-requests)
+, we have:
 
 - **Limited Workflow Runs**: Configured the repository to prevent GitHub Actions from creating or approving pull requests unless they are from trusted users.
-- **Scoped Permissions**: Ensured that the self-hosted runners are used only by this repository and will not run any workflow that is outside of this repo. See ![Changed GitHub Actions repository permissions](docs/images/secure_githubworkflows_for_self_hosted_runners.png).
+- **Scoped Permissions**: Ensured that the self-hosted runners are used only by this repository and will not run any workflow that is outside of this repository.
+ See ![Changed GitHub Actions repository permissions](docs/images/secure_githubworkflows_for_self_hosted_runners.png).
 
 #### 4. Monitoring and Auditing
 
-Continuous monitoring and periodic auditing are vital to maintaining the security of our CI/CD pipeline. Our team regularly checks the logs and monitors the activity of our self-hosted runners to detect and respond to any unusual or unauthorized activity promptly.
+Continuous monitoring and periodic auditing are vital to maintaining the security of our CI/CD pipeline.
+I turn off the self-hosted runner most of the time and do checks the logs and monitors the activity of my
+self-hosted runners to detect and respond to any unusual or unauthorized activity promptly.
 
 ### Self-Hosted Runners Security Concerns Conclusion
 

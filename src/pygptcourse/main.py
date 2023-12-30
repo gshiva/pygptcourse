@@ -25,14 +25,26 @@ def detect_faces(face_detector, frame):
     return face_detector.detect_faces(frame)
 
 
+def is_display_available():
+    return "DISPLAY" in os.environ
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run the camera control system.")
     parser.add_argument(
         "--simulate", action="store_true", help="Run in simulation mode."
     )
+    parser.add_argument("--headless", action="store_true", help="Run in headless mode.")
     args, unknown = parser.parse_known_args()
-
     print(f"Warning: {unknown} arguments passed")
+
+    headless_mode = args.headless
+    # if DISPLAY is not set then force headless mode
+    if not is_display_available():
+        print(
+            f"Running where DISPLAY is not set. Forcing headless mode. Original headless mode: {headless_mode}"
+        )
+        headless_mode = True
 
     # Retrieve environment variable or default to where this script is located
     image_dir = os.environ.get(
@@ -138,7 +150,51 @@ def main():
 
                 camera_control.launch_if_aligned(face_center)
 
-            cv2.imshow("Video", image)
+            if not headless_mode:
+                # Note that if DISPLAY is not set or if OpenCV is not able to display the image
+                # it just Aborts. It aborts with this error
+                # qt.qpa.xcb: could not connect to display
+                # qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in
+                # "/root/.cache/pypoetry/virtualenvs/...py3.11/lib/python3.11/site-packages/cv2/qt/plugins"
+                # even though it was found.
+                # This application failed to start because no Qt platform plugin could be initialized.
+                # Reinstalling the application may fix this problem.
+
+                # Available platform plugins are: xcb.
+
+                # Fatal Python error: Aborted
+
+                # Thread 0x00007f5104a82700 (most recent call first):
+                # File "/usr/local/lib/python3.11/selectors.py", line 415 in select
+                # File "/usr/local/lib/python3.11/socketserver.py", line 233 in serve_forever
+                # File "/usr/local/lib/python3.11/threading.py", line 982 in run
+                # File "/usr/local/lib/python3.11/threading.py", line 1045 in _bootstrap_inner
+                # File "/usr/local/lib/python3.11/threading.py", line 1002 in _bootstrap
+
+                # Current thread 0x00007f511c95d740 (most recent call first):
+                # File "/workspaces/pygptcourse/src/pygptcourse/main.py", line 172 in main
+                # File "/workspaces/pygptcourse/src/pygptcourse/main.py", line 193 in <module>
+
+                # Extension modules: numpy.core._multiarray_umath, numpy.core._multiarray_tests,
+                # numpy.linalg._umath_linalg, numpy.fft._pocketfft_internal, numpy.random._common,
+                # numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._mt19937,
+                # numpy.random.mtrand, numpy.random._philox, numpy.random._pcg64,
+                # numpy.random._sfc64, numpy.random._generator, PIL._imaging (total: 14)
+                # Aborted (core dumped)
+                # This cannot be handled using signal handlers as SIGABRT cannot be handled by python signal handlers
+                # The way around it is to fork a child process for this and handle the signal there.
+                # Please see:
+                # https://discuss.python.org/t/how-can-i-handle-sigabrt-from-third-party-c-code-std-abort-call/22078/4
+                # For now hacking it by checking DISPLAY env variable and not calling cv2.imshow function
+                try:
+                    cv2.imshow("Video", image)
+                except Exception as e:
+                    print(
+                        f"Unable to show image due to {e} and headless mode not set. \
+                          Forcefully setting the mode to headless"
+                    )
+                    headless_mode = True
+
             counter += 1
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break

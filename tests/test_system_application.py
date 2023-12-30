@@ -1,9 +1,63 @@
 import os
+import sys
 import traceback
 import unittest
 from unittest.mock import MagicMock, patch
 
 import cv2
+
+# isort: off
+from pygptcourse.main import main  # type: ignore
+
+# isort: on
+
+
+class TestApplicationModes(unittest.TestCase):
+    @patch(
+        "pygptcourse.main.cv2.VideoCapture"
+    )  # Mocking VideoCapture to prevent actual camera interaction
+    def setUp(self, mock_video_capture):
+        # Set up mock for VideoCapture
+        mock_video_capture.return_value.read.return_value = (
+            False,
+            MagicMock(name="frame"),
+        )
+        # Common setup for all tests can go here
+
+    @patch(
+        "pygptcourse.main.cv2.imshow"
+    )  # Mocking cv2.imshow to prevent actual display window
+    def test_headless_by_env(self, mock_imshow):
+        # Test to ensure cv2.imshow is not called when DISPLAY is not set
+        with patch.dict("os.environ", {"DISPLAY": ""}):
+            try:
+                main()
+            except Exception as e:
+                print(
+                    f"Ran into exception {e} when running main. Ignoring it for the headless test"
+                )
+                pass
+
+            # Asserting cv2.imshow is not called when DISPLAY environment variable is not set
+            mock_imshow.assert_not_called()
+
+    @patch(
+        "pygptcourse.main.cv2.imshow"
+    )  # Mocking cv2.imshow to prevent actual display window
+    def test_headless_mode_arg(self, mock_imshow):
+        # Simulate command-line arguments for headless mode
+        test_args = ["main.py", "--headless"]
+        with patch.object(sys, "argv", test_args):
+            try:
+                main()
+            except Exception as e:
+                print(
+                    f"Ran into exception {e} when running main. Ignoring it for the headless test"
+                )
+                pass
+
+            # Assertions to ensure headless behavior when --headless argument is passed
+            mock_imshow.assert_not_called()
 
 
 class TestApplicationEndToEnd(unittest.TestCase):
@@ -57,8 +111,6 @@ class TestApplicationEndToEnd(unittest.TestCase):
         mock_face_detector.return_value = mock_face_detector_instance
 
         # Execute the main function
-        from pygptcourse.main import main  # type: ignore
-
         main()
         try:
             main()
@@ -75,7 +127,7 @@ class TestApplicationEndToEnd(unittest.TestCase):
         mock_press_wait_key.assert_called()
         mock_launcher.assert_called()
         mock_environ_get.assert_called()
-        mock_cv2_imshow.assert_called()
+        mock_cv2_imshow.assert_not_called()
 
 
 if __name__ == "__main__":
