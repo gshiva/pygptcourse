@@ -592,6 +592,39 @@ self-hosted runners to detect and respond to any unusual or unauthorized activit
 
 By implementing these security measures, we aim to maintain a robust and secure CI/CD pipeline using self-hosted runners while minimizing the risk to our infrastructure and sensitive data. We continuously evaluate and update our security practices to adhere to the latest recommendations and best practices.
 
+## Setting Up OpenTelemetry Metrics
+
+### Open-Telemetry Pre-requisites
+
+Before you begin, ensure you have the following:
+
+- An account with Grafana Cloud or a similar platform that supports OTLP (OpenTelemetry Protocol).
+- The application's latest dependencies installed, including OpenTelemetry packages.
+
+### Open-Telemetry Configuration
+
+1. **Environment Variables**:
+   Copy the `.env.example` to a new file named `.env` and fill in the Grafana Cloud OTLP credentials:
+   - `GRAFANA_OTLP_USERNAME`: Your Grafana Cloud instance ID.
+   - `GRAFANA_OTLP_API_ENCODED_TOKEN`: Your Grafana Cloud API token, base64 encoded.
+   - `GRAFANA_OTLP_ENDPOINT`: Your Grafana Cloud OTLP gateway endpoint.
+
+1. **Validating the Configuration**:
+   Ensure that the environment variables are correctly set up by starting the application and point your camera to a known face. Once a face is detected it should start sending the metrics to grafana cloud within 10 seconds. Check for any `Status.UNAVAILABLE` errors related to OpenTelemetry.
+
+### Testing Metrics Collection
+
+1. **Running the Application**:
+   Start the application with the necessary flags. If OpenTelemetry is correctly configured, it will start collecting and sending metrics to the specified endpoint.
+
+1. **Viewing Metrics**:
+   - Navigate to your Grafana dashboard and explore the metrics under the explore tab.
+   - Look for metrics named `faces_detected`, `launch_count`, or other application-specific metrics as configured in the OTel decorators.
+
+### Verifying Metrics in Grafana
+
+After running the application and generating some data, you should see metrics appearing in your Grafana dashboard. Verify that the metrics make sense and reflect the application's operations accurately. Look for any discrepancies or unexpected behavior in metric reporting.
+
 ## Credits
 
 This code is based on the original source available at [https://github.com/hovren/pymissile](https://github.com/hovren/pymissile).

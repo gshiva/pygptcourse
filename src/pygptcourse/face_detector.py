@@ -1,5 +1,7 @@
 import face_recognition  # type: ignore
 
+from pygptcourse.otel_decorators import otel_handler
+
 
 class FaceDetector:
     def __init__(self, face_images, image_loader):
@@ -30,5 +32,6 @@ class FaceDetector:
                 name = list(self.face_encodings.keys())[first_match_index]
 
             face_names.append(name)
+            otel_handler.faces_detected_count.add(1, {"name": name})
 
         return face_locations, face_names

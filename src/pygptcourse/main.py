@@ -5,22 +5,18 @@ import traceback
 import cv2  # type: ignore
 
 # isort: off
-from prometheus_client import Summary, start_http_server
-
 from pygptcourse.camera_control import CameraControl
 from pygptcourse.camera_manager import CameraManager
 from pygptcourse.face_detector import FaceDetector
 from pygptcourse.file_system_image_loader import FileSystemImageLoader
+from pygptcourse.otel_decorators import otel_handler
 
 # isort: on
 
+
 # the above is required because the local isort adds a new line while default GHA (Github Actions)
 # adds a new line
-# Create a metric to track time spent and requests made.
-REQUEST_TIME = Summary("face_detection_seconds", "Time spent detecting faces")
-
-
-@REQUEST_TIME.time()
+@otel_handler.trace
 def detect_faces(face_detector, frame):
     return face_detector.detect_faces(frame)
 
@@ -207,6 +203,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # Start up the server to expose the metrics.
-    start_http_server(port=18000, addr="0.0.0.0")
     main()
