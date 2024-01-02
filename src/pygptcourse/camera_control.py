@@ -11,29 +11,6 @@ from pygptcourse.tshirt_launcher import (
 )
 
 
-def print_attributes_and_methods(obj):
-    # Use dir() to get a list of all names (attributes and methods)
-    all_names = dir(obj)
-
-    # Filter attributes (excluding methods)
-    attributes = [name for name in all_names if not callable(getattr(obj, name))]
-
-    # Filter methods
-    methods = [name for name in all_names if callable(getattr(obj, name))]
-
-    # Print attributes and their definitions
-    print("Attributes:")
-    for attr in attributes:
-        value = getattr(obj, attr)
-        print(f"Attribute: {attr}, Definition: {value}")
-
-    # Print methods and their definitions
-    print("\nMethods:")
-    for method_name in methods:
-        method = getattr(obj, method_name)
-        print(f"Method: {method_name}, Definition: {method}")
-
-
 class CameraControl:
     TOTAL_TIME_LR = 26
     TOTAL_TIME_TB = 4
