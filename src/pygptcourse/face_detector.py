@@ -8,6 +8,7 @@ class FaceDetector:
         self.image_loader = image_loader
         self.face_encodings = self.load_and_encode_faces(face_images)
 
+    @otel_handler.trace
     def load_and_encode_faces(self, face_images):
         encodings = {}
         for name, image_path in face_images.items():
@@ -16,6 +17,7 @@ class FaceDetector:
             encodings[name] = face_recognition.face_encodings(image)[0]
         return encodings
 
+    @otel_handler.trace
     def detect_faces(self, image):
         face_locations = face_recognition.face_locations(image)
         face_encodings = face_recognition.face_encodings(image, face_locations)

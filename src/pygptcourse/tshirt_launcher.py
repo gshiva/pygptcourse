@@ -8,6 +8,8 @@ import time
 import usb.core  # type: ignore
 import usb.util  # type: ignore
 
+from pygptcourse.otel_decorators import otel_handler
+
 VENDOR = 0x1941
 PRODUCT = 0x8021
 
@@ -50,28 +52,35 @@ class SimulatedLauncher(AbstractLauncher):
         self.running = False
         super().__init__()
 
+    @otel_handler.trace
     def send_command(self, command):
         print(f"Simulated sending command {command}")
 
+    @otel_handler.trace
     def start(self):
         self.running = True
         print("Simulated launcher started")
 
+    @otel_handler.trace
     def stop(self):
         self.running = False
         print("Simulated launcher stopped")
 
+    @otel_handler.trace
     def fire(self):
         print("Simulated firing")
 
+    @otel_handler.trace
     def move(self, command, duration):
         print(f"Simulating move with command {command} for duration {duration}")
 
+    @otel_handler.trace
     def close(self):
         print("Simulated launcher closed")
 
 
 class Launcher(AbstractLauncher):
+    @otel_handler.trace
     def __init__(self):
         dev = usb.core.find(idVendor=VENDOR, idProduct=PRODUCT)
 
@@ -119,16 +128,19 @@ class Launcher(AbstractLauncher):
     #        except usb.core.USBError, e:
     #            print("RESET ERROR", e)
 
+    @otel_handler.trace
     def start(self):
         self.running = True
         self.t = threading.Thread(target=self.read_process)
         self.t.start()
         self.running = True
 
+    @otel_handler.trace
     def stop(self):
         self.running = False
         print("Thread stopped")
 
+    @otel_handler.trace
     def read_process(self):
         abort_fire = False
         fire_complete_time = time.time()
@@ -199,12 +211,14 @@ class Launcher(AbstractLauncher):
         self.close()
         print("THREAD STOPPED")
 
+    @otel_handler.trace
     def read(self, length):
         try:
             return self.ep.read(length)
         except usb.core.USBError:
             return None
 
+    @otel_handler.trace
     def send_command(self, command):
         try:
             self.command = command
@@ -212,6 +226,7 @@ class Launcher(AbstractLauncher):
         except usb.core.USBError as e:
             print("SEND ERROR", e)
 
+    @otel_handler.trace
     def move(self, command, duration):
         try:
             self.send_command(command)
@@ -220,6 +235,7 @@ class Launcher(AbstractLauncher):
         except usb.core.USBError as e:
             print("SEND ERROR", e)
 
+    @otel_handler.trace
     def fire(self):
         try:
             self.firing = True
@@ -230,6 +246,7 @@ class Launcher(AbstractLauncher):
 
     # added to see if this would fix the overheating problem
     # after the program exits when connected to a Mac
+    @otel_handler.trace
     def close(self):
         self.stop()
         print("Closing connection")

@@ -625,6 +625,59 @@ Before you begin, ensure you have the following:
 
 After running the application and generating some data, you should see metrics appearing in your Grafana dashboard. Verify that the metrics make sense and reflect the application's operations accurately. Look for any discrepancies or unexpected behavior in metric reporting.
 
+### Testing Traces
+
+#### Tracing Functions
+
+To trace a function, decorate it with the `@otel_handler.trace` decorator:
+
+```python
+@otel_handler.trace
+def your_function_to_trace(arg1, arg2):
+    # Your function logic
+```
+
+#### Viewing Traces in Grafana Cloud
+
+After integrating enhanced tracing capabilities into your application using OpenTelemetry, you can visualize and analyze the traces in Grafana Cloud. Here's how to view the traces:
+
+##### Tracing Prerequisites
+
+- Ensure that your application is configured to send traces to Grafana Cloud's OTLP endpoint. This typically involves setting the correct endpoint, API token, and other necessary configuration in your application's OpenTelemetry setup.
+- Have access to a Grafana Cloud account where the traces are sent. Ensure you have the appropriate permissions to view and manage traces.
+
+##### Viewing Traces
+
+1. **Log in to Grafana Cloud**: Navigate to your Grafana Cloud instance and log in with your credentials.
+
+1. **Navigate to the Traces Section**:
+    - Once logged in, look for the "Explore" section in the left-hand menu.
+    - Within "Explore", you should see an option for "Traces" or "Tempo" (Grafana's tracing backend), depending on your Grafana Cloud setup.
+
+1. **Selecting Data Source**:
+    - If prompted, select the appropriate data source that corresponds to where your application sends its traces. This is typically the OTLP endpoint you configured in your application.
+
+1. **Exploring Traces**:
+    - **View Trace List**: You will see a list of recent traces. Each trace typically represents a request or transaction in your application.
+    - **Filtering and Searching**: Use available filters or search functionalities to find specific traces. You can filter by service, operation, duration, and other trace attributes.
+    - **Trace Details**: Click on a specific trace to view its detailed information, including spans, attributes, and any logs or errors captured.
+
+1. **Understanding Trace Details**:
+    - **Spans**: Each trace consists of multiple spans. Each span represents a unit of work in your application, like a function call or a database query.
+    - **Attributes**: Look at the attributes to understand more about each span, including function arguments, return values, and error messages.
+    - **Visualization**: Spans are typically visualized in a waterfall diagram showing the parent-child relationships and the time each span took.
+
+#### Tips for Effective Trace Analysis
+
+- **Correlate Logs and Metrics**: If possible, correlate trace data with logs and metrics to get a comprehensive view of the application behavior.
+- **Use Trace ID**: If you need to correlate a trace with logs or other data, use the trace ID as a reference.
+- **Regular Review**: Regularly review trace data to understand typical application behavior and identify areas for performance improvement or error correction.
+
+#### Grafana Cloud Support
+
+For more detailed instructions or troubleshooting, refer to the Grafana Cloud documentation or contact Grafana Cloud support. Ensure your Grafana Cloud and OpenTelemetry configurations are correctly set up for successful trace collection and visualization.
+
+
 ## Credits
 
 This code is based on the original source available at [https://github.com/hovren/pymissile](https://github.com/hovren/pymissile).

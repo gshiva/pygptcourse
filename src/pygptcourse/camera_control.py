@@ -1,5 +1,6 @@
 import time
 
+from pygptcourse.otel_decorators import otel_handler
 from pygptcourse.tshirt_launcher import (
     DOWN,
     LEFT,
@@ -20,6 +21,7 @@ class CameraControl:
     TOLERANCE = IMAGE_HEIGHT / (4 * 2)  # for 480, it is 60
     launch_count = 0
 
+    @otel_handler.trace
     def __init__(self, simulation_mode=False):
         self.simulation_mode = simulation_mode
         print("Starting initialization of Launcher")
@@ -27,11 +29,13 @@ class CameraControl:
         print("Finished initialization of Launcher")
         self.current_camera_position = [self.TOTAL_TIME_LR, self.TOTAL_TIME_TB]
 
+    @otel_handler.trace
     def start(self):
         if not self.launcher.running:
             print("Starting launcher...")
             self.launcher.start()
 
+    @otel_handler.trace
     def move_camera(self, direction, duration):
         cmd = STOP
         prev_current_camera_position = self.current_camera_position.copy()
@@ -77,6 +81,7 @@ class CameraControl:
         )
         self.launcher.move(cmd, duration)
 
+    @otel_handler.trace
     def move_camera_to_center(self):
         print("Moving camera to center")
         # Move to bottom left (0, TOTAL_TIME_TB)
@@ -93,6 +98,7 @@ class CameraControl:
         self.move_camera("RIGHT", self.TOTAL_TIME_LR / 2)
         self.move_camera("UP", self.TOTAL_TIME_TB / 2)
 
+    @otel_handler.trace
     def check_and_move_camera(self, face_center):
         dx = face_center[0] - (self.IMAGE_WIDTH / 2)
         dy = face_center[1] - (self.IMAGE_HEIGHT / 2)
@@ -114,6 +120,7 @@ class CameraControl:
 
         return moving
 
+    @otel_handler.trace
     def launch_if_aligned(self, face_center):
         moving = self.check_and_move_camera(face_center)
         if not moving:
@@ -122,6 +129,7 @@ class CameraControl:
         else:
             print("Target not aligned. Holding launch.")
 
+    @otel_handler.trace
     def stop(self):
         self.launcher.running = False
         self.launcher.close()

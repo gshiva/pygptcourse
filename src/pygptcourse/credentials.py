@@ -18,7 +18,7 @@ class OpenTelemetryCredentials:
         ).decode("utf-8")
         self.endpoint = os.getenv("GRAFANA_OTLP_ENDPOINT")
         if self.endpoint:
-            self.trace_endpoint = self.endpoint + "/v1/traces"
+            self.traces_endpoint = self.endpoint + "/v1/traces"
             self.metrics_endpoint = self.endpoint + "/v1/metrics"
             self.logs_endpoint = self.endpoint + "/v1/logs"
 

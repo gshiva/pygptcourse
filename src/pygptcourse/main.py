@@ -25,6 +25,7 @@ def is_display_available():
     return "DISPLAY" in os.environ
 
 
+@otel_handler.trace
 def main():
     parser = argparse.ArgumentParser(description="Run the camera control system.")
     parser.add_argument(
