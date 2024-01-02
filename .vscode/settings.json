@@ -3,6 +3,12 @@
         "main"
     ],
     "cSpell.words": [
-        "adil"
+        "adil",
+        "creds",
+        "dotenv",
+        "millis",
+        "opentelemetry",
+        "otel",
+        "OTLP"
     ]
 }
