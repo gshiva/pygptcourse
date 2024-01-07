@@ -676,7 +676,7 @@ After integrating enhanced tracing capabilities into your application using Open
 
 ### Viewing Logs in Grafana Cloud
 
-- **Viewing Logs**: Check the application logs as per the configured logger settings on the command line. They provide detailed insights and are essential for debugging and monitoring.
+- **Viewing Logs**: Check the application logs as per the configured logger settings on the command-line. They provide detailed insights and are essential for debugging and monitoring.
   Once configured you can view them by going to `Explore->Loki` in Grafana Dashboards
 - **Configuring Logger**: Customize the logger settings such as level and format by modifying the logging configuration as needed.
 
