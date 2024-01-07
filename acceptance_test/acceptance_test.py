@@ -118,6 +118,22 @@ test_cases = [
             "from its recognized position."
         ),
     },
+    {
+        "name": "Observability and Monitoring",
+        "instructions": (
+            "Ensure that the .env file is populated with the right values"
+            " for Grafana Cloud Integration.\n"
+            "See .env.example on the values that need to be set.\n"
+            "Start with a recognized face in a stationary position. After "
+            "identification, move it out of the position."
+        ),
+        "expected_result": (
+            "On the Explore tab in Grafana Cloud, you should be able to see:\n"
+            "faces_detected metric in grafanacloud-*-prom\n"
+            "traces and spans in grafanacloud-*-traces\n"
+            "logs in grafanacloud-*-logs\n"
+        ),
+    },
 ]
 
 
