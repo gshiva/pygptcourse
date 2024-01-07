@@ -1,10 +1,15 @@
 # otel_decorators.py
-
+import logging
+import sys
 from functools import wraps
 
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.metrics import get_meter_provider, set_meter_provider
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
@@ -13,6 +18,8 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import get_tracer_provider, set_tracer_provider
 
 from pygptcourse.credentials import OpenTelemetryCredentials
+
+logging.getLogger().setLevel(logging.INFO)
 
 
 class DummyMetric:
@@ -80,6 +87,30 @@ class OpenTelemetryHandler:
                 set_tracer_provider(trace_provider)
                 self.tracer = get_tracer_provider().get_tracer(service_name, VERSION)
 
+                # Set up logger provider with resource attributes
+
+                # Configure OTLP log exporter
+                self.otlp_logs_exporter = OTLPLogExporter(
+                    endpoint=f"{self.creds.logs_endpoint}",
+                    headers={"authorization": f"Basic {self.creds.api_encoded_token}"},
+                )
+                logger_provider = LoggerProvider(resource=self.resource)
+                self.logger_provider = set_logger_provider(logger_provider)
+                logger_provider.add_log_record_processor(
+                    BatchLogRecordProcessor(self.otlp_logs_exporter)
+                )
+
+                # Create and attach OTLP logging handler to root logger
+                handler = LoggingHandler(
+                    level=logging.NOTSET, logger_provider=logger_provider
+                )
+                logging.getLogger().addHandler(handler)
+
+                # Add the stdout logging handler also
+                handler = logging.StreamHandler(sys.stdout)
+                handler.setLevel(logging.INFO)
+                logging.getLogger().addHandler(handler)
+
                 # Metric definitions
                 self.usb_failures = self.meter.create_counter(
                     "usb_connection_failures",
@@ -98,7 +129,7 @@ class OpenTelemetryHandler:
             except Exception as e:
                 # Handle initialization failure by disabling OpenTelemetry and using dummy metrics
                 self.enabled = False
-                print(f"OpenTelemetry initialization failed: {e}")
+                logging.error(f"OpenTelemetry initialization failed: {e}")
 
                 # Initializing dummy metrics
                 self._initialize_dummy_metrics()
@@ -132,6 +163,7 @@ class OpenTelemetryHandler:
                     return result
                 except Exception as e:
                     # Capture and log the exception details
+                    logging.error(f"Exception in {func.__name__}: {e}", exc_info=True)
                     span.set_attribute("error", True)
                     span.record_exception(e)
                     raise

@@ -1,9 +1,12 @@
 # credentials.py
 
 import base64
+import logging
 import os
 
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 
 class OpenTelemetryCredentials:
@@ -11,7 +14,7 @@ class OpenTelemetryCredentials:
         load_dotenv()  # Load environment variables from .env file
 
         self.username = os.getenv("GRAFANA_OTLP_USERNAME")
-        print(f"Grafana OTLP username is: {self.username}")
+        logger.info(f"Grafana OTLP username is: {self.username}")
         self.api_token = os.getenv("GRAFANA_OTLP_API_TOKEN")
         self.api_encoded_token = base64.b64encode(
             f"{self.username}:{self.api_token}".encode("utf-8")

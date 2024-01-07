@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import traceback
 
@@ -12,6 +13,8 @@ from pygptcourse.file_system_image_loader import FileSystemImageLoader
 from pygptcourse.otel_decorators import otel_handler
 
 # isort: on
+
+logger = logging.getLogger(__name__)
 
 
 # the above is required because the local isort adds a new line while default GHA (Github Actions)
@@ -33,12 +36,12 @@ def main():
     )
     parser.add_argument("--headless", action="store_true", help="Run in headless mode.")
     args, unknown = parser.parse_known_args()
-    print(f"Warning: {unknown} arguments passed")
+    logger.warning(f"Warning: {unknown} arguments passed")
 
     headless_mode = args.headless
     # if DISPLAY is not set then force headless mode
     if not is_display_available():
-        print(
+        logger.warning(
             f"Running where DISPLAY is not set. Forcing headless mode. Original headless mode: {headless_mode}"
         )
         headless_mode = True
@@ -56,16 +59,16 @@ def main():
     face_detector = FaceDetector(face_images, image_loader)
 
     # Initialize CameraControl and CameraManager
-    print("Initializing CameraControl")
+    logger.info("Initializing CameraControl")
     camera_control = CameraControl(simulation_mode=args.simulate)
-    print("Initializing CameraManager")
+    logger.info("Initializing CameraManager")
     camera_manager = CameraManager()
 
     counter = 0
     face_names = []
 
     try:
-        print("Moving launcher to the center")
+        logger.info("Moving launcher to the center")
         camera_control.start()
         camera_control.move_camera_to_center()
 
@@ -108,7 +111,7 @@ def main():
                     + str(top)
                 )
 
-                print(
+                logger.info(
                     f"Name: {name}, drawing a label with coordinates: ({left}, {bottom - 35}), ({right}, {bottom})"
                 )
 
@@ -186,7 +189,7 @@ def main():
                 try:
                     cv2.imshow("Video", image)
                 except Exception as e:
-                    print(
+                    logger.error(
                         f"Unable to show image due to {e} and headless mode not set. \
                           Forcefully setting the mode to headless"
                     )
@@ -196,7 +199,7 @@ def main():
             if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
     except Exception as e:
-        print(f"Caught exception {e}")
+        logger.error(f"Caught exception {e}")
         traceback.print_exc()
     finally:
         camera_manager.stop()

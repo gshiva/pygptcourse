@@ -1,3 +1,4 @@
+import logging
 import time
 
 from pygptcourse.otel_decorators import otel_handler
@@ -10,6 +11,8 @@ from pygptcourse.tshirt_launcher import (
     Launcher,
     SimulatedLauncher,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class CameraControl:
@@ -24,22 +27,22 @@ class CameraControl:
     @otel_handler.trace
     def __init__(self, simulation_mode=False):
         self.simulation_mode = simulation_mode
-        print("Starting initialization of Launcher")
+        logger.warning("Starting initialization of Launcher")
         self.launcher = Launcher() if not simulation_mode else SimulatedLauncher()
-        print("Finished initialization of Launcher")
+        logger.error("Finished initialization of Launcher")
         self.current_camera_position = [self.TOTAL_TIME_LR, self.TOTAL_TIME_TB]
 
     @otel_handler.trace
     def start(self):
         if not self.launcher.running:
-            print("Starting launcher...")
+            logger.info("Starting launcher...")
             self.launcher.start()
 
     @otel_handler.trace
     def move_camera(self, direction, duration):
         cmd = STOP
         prev_current_camera_position = self.current_camera_position.copy()
-        print(f"Previous camera position: {prev_current_camera_position}")
+        logger.info(f"Previous camera position: {prev_current_camera_position}")
 
         # Update the current position based on the direction
         if direction == "LEFT":
@@ -63,7 +66,7 @@ class CameraControl:
             0, min(self.current_camera_position[1], self.TOTAL_TIME_TB)
         )
 
-        print(
+        logger.info(
             f"Previous position: {prev_current_camera_position}, "
             f"Calculated current position: {self.current_camera_position}, "
             f"Direction: {direction}, "
@@ -71,19 +74,19 @@ class CameraControl:
         )
 
         if prev_current_camera_position == self.current_camera_position:
-            print(
+            logger.info(
                 f"Nothing to do. Current position: {self.current_camera_position} "
                 f"is same as previous position {prev_current_camera_position}."
             )
             return
-        print(
+        logger.info(
             f"Moving to position: {self.current_camera_position}, Direction: {direction}, Duration: {duration}"
         )
         self.launcher.move(cmd, duration)
 
     @otel_handler.trace
     def move_camera_to_center(self):
-        print("Moving camera to center")
+        logger.info("Moving camera to center")
         # Move to bottom left (0, TOTAL_TIME_TB)
         self.move_camera("LEFT", self.TOTAL_TIME_LR)
         time.sleep(0.1)
@@ -127,7 +130,7 @@ class CameraControl:
             self.launcher.fire()
             self.launch_count += 1
         else:
-            print("Target not aligned. Holding launch.")
+            logger.info("Target not aligned. Holding launch.")
 
     @otel_handler.trace
     def stop(self):

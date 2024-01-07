@@ -608,6 +608,7 @@ Before you begin, ensure you have the following:
    - `GRAFANA_OTLP_USERNAME`: Your Grafana Cloud instance ID.
    - `GRAFANA_OTLP_API_ENCODED_TOKEN`: Your Grafana Cloud API token, base64 encoded.
    - `GRAFANA_OTLP_ENDPOINT`: Your Grafana Cloud OTLP gateway endpoint.
+   - `OTEL_PYTHON_LOG_CORRELATION`: Set to "true" to enable log correlation.
 
 1. **Validating the Configuration**:
    Ensure that the environment variables are correctly set up by starting the application and point your camera to a known face. Once a face is detected it should start sending the metrics to grafana cloud within 10 seconds. Check for any `Status.UNAVAILABLE` errors related to OpenTelemetry.
@@ -673,10 +674,20 @@ After integrating enhanced tracing capabilities into your application using Open
 - **Use Trace ID**: If you need to correlate a trace with logs or other data, use the trace ID as a reference.
 - **Regular Review**: Regularly review trace data to understand typical application behavior and identify areas for performance improvement or error correction.
 
-#### Grafana Cloud Support
+### Viewing Logs in Grafana Cloud
 
-For more detailed instructions or troubleshooting, refer to the Grafana Cloud documentation or contact Grafana Cloud support. Ensure your Grafana Cloud and OpenTelemetry configurations are correctly set up for successful trace collection and visualization.
+- **Viewing Logs**: Check the application logs as per the configured logger settings on the command line. They provide detailed insights and are essential for debugging and monitoring.
+  Once configured you can view them by going to `Explore->Loki` in Grafana Dashboards
+- **Configuring Logger**: Customize the logger settings such as level and format by modifying the logging configuration as needed.
 
+#### Environment Variables
+
+Ensure the `OTEL_PYTHON_LOG_CORRELATION` is set to true for enabling log correlation:
+
+#### Additional Resources
+
+- For more detailed instructions on sending data via OTLP, refer to [Grafana Cloud documentation](https://grafana.com/docs/grafana-cloud/send-data/otlp/send-data-otlp/).
+- For more information on Python logging, see the [Python logging documentation](https://docs.python.org/3/library/logging.html).
 
 ## Credits
 

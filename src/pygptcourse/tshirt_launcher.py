@@ -2,6 +2,7 @@
 #!/usr/bin/env python3 # noqa
 # encoding: utf8
 import abc
+import logging
 import threading
 import time
 
@@ -9,6 +10,9 @@ import usb.core  # type: ignore
 import usb.util  # type: ignore
 
 from pygptcourse.otel_decorators import otel_handler
+
+logger = logging.getLogger(__name__)
+
 
 VENDOR = 0x1941
 PRODUCT = 0x8021
@@ -54,29 +58,29 @@ class SimulatedLauncher(AbstractLauncher):
 
     @otel_handler.trace
     def send_command(self, command):
-        print(f"Simulated sending command {command}")
+        logger.info(f"Simulated sending command {command}")
 
     @otel_handler.trace
     def start(self):
         self.running = True
-        print("Simulated launcher started")
+        logger.info("Simulated launcher started")
 
     @otel_handler.trace
     def stop(self):
         self.running = False
-        print("Simulated launcher stopped")
+        logger.info("Simulated launcher stopped")
 
     @otel_handler.trace
     def fire(self):
-        print("Simulated firing")
+        logger.info("Simulated firing")
 
     @otel_handler.trace
     def move(self, command, duration):
-        print(f"Simulating move with command {command} for duration {duration}")
+        logger.info(f"Simulating move with command {command} for duration {duration}")
 
     @otel_handler.trace
     def close(self):
-        print("Simulated launcher closed")
+        logger.info("Simulated launcher closed")
 
 
 class Launcher(AbstractLauncher):
@@ -86,14 +90,14 @@ class Launcher(AbstractLauncher):
 
         if dev is None:
             error_string = f"Could not find USB device with id vendor: {hex(VENDOR)} and id product: {hex(PRODUCT)}"
-            print(error_string)
+            logger.error(error_string)
             raise RuntimeError(error_string)
 
         try:
             dev.detach_kernel_driver(0)
-            print("Device unregistered")
+            logger.info("Device unregistered")
         except Exception as e:
-            print(f"Already unregistered, Exception: {e}")
+            logger.error(f"Already unregistered, Exception: {e}")
 
         dev.reset()
         self.dev = dev
@@ -126,7 +130,7 @@ class Launcher(AbstractLauncher):
     #        try:
     #            self.dev.reset()
     #        except usb.core.USBError, e:
-    #            print("RESET ERROR", e)
+    #            logger.info("RESET ERROR", e)
 
     @otel_handler.trace
     def start(self):
@@ -138,7 +142,7 @@ class Launcher(AbstractLauncher):
     @otel_handler.trace
     def stop(self):
         self.running = False
-        print("Thread stopped")
+        logger.info("Thread stopped")
 
     @otel_handler.trace
     def read_process(self):
@@ -148,13 +152,13 @@ class Launcher(AbstractLauncher):
             time.sleep(0.1)
             if self.firing and abort_fire:
                 if time.time() - fire_complete_time > 10.0:
-                    print("Aborting fire")
+                    logger.info("Aborting fire")
                     self.send_command(0)
                     self.firing = False
                     abort_fire = False
 
             data = self.read(8)
-            # print(data)
+            # logger.info(data)
             if data:
                 a, b = data[:2]
                 # the data value looks like this: array('B', [0, 24, 0, 0, 0, 0, 0, 0])
@@ -185,31 +189,31 @@ class Launcher(AbstractLauncher):
                 self.state["fire"] = FIRE_COMPLETED
 
                 if LEFT_LIMIT and self.command == LEFT:
-                    print("All the way left. Sending STOP")
+                    logger.info("All the way left. Sending STOP")
                     self.send_command(STOP)
                 elif RIGHT_LIMIT and self.command == RIGHT:
-                    print("All the way right. Sending STOP")
+                    logger.info("All the way right. Sending STOP")
                     self.send_command(STOP)
                 elif UP_LIMIT and self.command == UP:
-                    print("All the way up. Sending STOP")
+                    logger.info("All the way up. Sending STOP")
                     self.send_command(STOP)
                 elif DOWN_LIMIT and self.command == DOWN:
-                    print("All the way down. Sending STOP")
+                    logger.info("All the way down. Sending STOP")
                     self.send_command(STOP)
 
                 if FIRE_COMPLETED and self.firing:
                     fire_complete_time = time.time()
-                    print(
+                    logger.info(
                         f"Firing completed in {fire_complete_time-self.fire_start_time} seconds."
                     )
                     time.sleep(
                         5.0
                     )  # waiting too short of a time causes the next firing to end too fast
-                    print("Fire completed. Sending 0")
+                    logger.info("Fire completed. Sending 0")
                     self.send_command(0)
                     self.firing = False
         self.close()
-        print("THREAD STOPPED")
+        logger.info("THREAD STOPPED")
 
     @otel_handler.trace
     def read(self, length):
@@ -224,7 +228,7 @@ class Launcher(AbstractLauncher):
             self.command = command
             self.dev.ctrl_transfer(0x21, 0x09, 0x200, 0, [command])
         except usb.core.USBError as e:
-            print("SEND ERROR", e)
+            logger.warning("SEND ERROR", e)
 
     @otel_handler.trace
     def move(self, command, duration):
@@ -233,7 +237,7 @@ class Launcher(AbstractLauncher):
             time.sleep(duration)
             self.send_command(STOP)
         except usb.core.USBError as e:
-            print("SEND ERROR", e)
+            logger.warning("SEND ERROR", e)
 
     @otel_handler.trace
     def fire(self):
@@ -242,14 +246,14 @@ class Launcher(AbstractLauncher):
             self.fire_start_time = time.time()
             self.send_command(FIRE)
         except Exception as e:
-            print(f"Error issuing fire command. Exception: {e}")
+            logger.error(f"Error issuing fire command. Exception: {e}")
 
     # added to see if this would fix the overheating problem
     # after the program exits when connected to a Mac
     @otel_handler.trace
     def close(self):
         self.stop()
-        print("Closing connection")
+        logger.info("Closing connection")
         usb.util.dispose_resources(self.dev)
 
 
@@ -285,7 +289,7 @@ if __name__ == "__main__":
 
     launcher.start()
 
-    print("Starting command loop")
+    logger.info("Starting command loop")
     while True:
         prompt = "{} {} {} {} {}".format(
             "L" if launcher.state["left"] else " ",
@@ -296,7 +300,7 @@ if __name__ == "__main__":
         )
         try:
             s = input("{}>> ".format(prompt)).strip()
-            print(f"Received command {s}")
+            logger.info(f"Received command {s}")
             cmd, delay_str = s.split()
             delay = float(delay_str)
         except EOFError:
@@ -309,7 +313,7 @@ if __name__ == "__main__":
             break
 
         if cmd in "rlud" and delay > 0:
-            print(f"Sending command {cmd}")
+            logger.info(f"Sending command {cmd}")
             if cmd == "r":
                 launcher.send_command(RIGHT)
             if cmd == "l":
@@ -334,4 +338,4 @@ if __name__ == "__main__":
 
     launcher.close()
 
-    print("Done")
+    logger.info("Done")
