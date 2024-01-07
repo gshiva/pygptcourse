@@ -17,7 +17,10 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import get_tracer_provider, set_tracer_provider
 
+# isort: off
 from pygptcourse.credentials import OpenTelemetryCredentials
+
+# isort: on
 
 logging.getLogger().setLevel(logging.INFO)
 

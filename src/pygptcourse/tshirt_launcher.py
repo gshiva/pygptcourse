@@ -9,7 +9,10 @@ import time
 import usb.core  # type: ignore
 import usb.util  # type: ignore
 
+# isort: off
 from pygptcourse.otel_decorators import otel_handler
+
+# isoft: on
 
 logger = logging.getLogger(__name__)
 
@@ -228,7 +231,7 @@ class Launcher(AbstractLauncher):
             self.command = command
             self.dev.ctrl_transfer(0x21, 0x09, 0x200, 0, [command])
         except usb.core.USBError as e:
-            logger.warning("SEND ERROR", e)
+            logger.warning(f"SEND ERROR {e}")
 
     @otel_handler.trace
     def move(self, command, duration):
@@ -237,7 +240,7 @@ class Launcher(AbstractLauncher):
             time.sleep(duration)
             self.send_command(STOP)
         except usb.core.USBError as e:
-            logger.warning("SEND ERROR", e)
+            logger.warning(f"SEND ERROR {e}")
 
     @otel_handler.trace
     def fire(self):
